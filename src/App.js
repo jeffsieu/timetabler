@@ -1,9 +1,12 @@
 import { Box, Card, Container, FormControl, makeStyles, TextField, Typography } from '@material-ui/core'
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import React, { useState } from 'react'
-import { fetchModule, deleteModule, re} from './redux/modulesSlice'
+import { fetchModule, deleteModule, re } from './redux/modulesSlice'
+import selectAllModules from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import AddMods from './AddMods'
+import { border, borderRadius } from '@material-ui/system'
+import logo from './title.png'
 
 const useStyles = makeStyles({
   title: {
@@ -30,6 +33,16 @@ const useStyles = makeStyles({
   {
     borderLeft: '1px solid',
     borderColor: 'black',
+  },
+  appBar: {
+    backgroundColor: '#ececec',
+    borderRadius: '8px'
+  },
+  img: {
+    padding: '8px',
+    marginTop: '5px',
+    width: '30%',
+    height: 'auto',
   }
 });
 
@@ -84,12 +97,9 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <div className={classes.title}>
-          <ScheduleIcon fontSize="large" style={{ marginRight: '0.25em' }}/>
-          <Typography variant="h4" >         
-            timetabler
-          </Typography>
-        </div>      
+        <Typography className={classes.appBar} variant="h4" >
+          <img src={logo} className={classes.img} />
+        </Typography>
         <Card>
           <Box display="flex" className={classes.row}>
             <Box width={100}>
@@ -119,18 +129,18 @@ function App() {
             </Box>
           )}
         </Card>
-        <AddMods 
+        <AddMods
           listOfMods={listOfMods}
           onTextChange={onTextChange}
         />
         <form onSubmit={submitModule}>
-          <TextField onChange={onTextChange} inputProps={{style: {textTransform: 'uppercase'}}}>
+          <TextField onChange={onTextChange} inputProps={{ style: { textTransform: 'uppercase' } }}>
 
           </TextField>
         </form>
         {modules.length}
         {
-          modules.map(module => 
+          modules.map(module =>
             <Box>
               {module.moduleCode}
             </Box>
