@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { createStore } from 'redux'
 import { createSlice } from '@reduxjs/toolkit'
-import SearchForm from './SearchForm.js'
+import AddMods from './AddMods.js'
 
 function App() {
   return (
-    <SearchForm />
+    <AddMods />
   );
 }
 
