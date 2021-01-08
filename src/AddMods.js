@@ -36,8 +36,8 @@ export default function AddMods(props) {
     setInputValue('');
     setSelectValue('');
   }
+  const newMap = allModules.filter( modules => modules.moduleCode.includes(inputValue.toLocaleUpperCase()) && inputValue.length > 1).map( modules => modules.moduleCode)
 
-  const mapped = allModules.map( modules => modules.moduleCode)
  
   return (
     <div className={classes.width}>
@@ -59,8 +59,9 @@ export default function AddMods(props) {
             setInputValue(newInputValue);
           }}
           id="mod-search"
-          options={mapped}
+          options={newMap}
           style={{ width: 300 }}
+          noOptionsText = {'Enter a valid module code'}
           renderInput={(params) => <TextField {...params} label="Add Module" variant="outlined" />}
         />
         {/* <Input onChange = {e => setInputValue(e.target.value)} value = {inputValue}>Enter a module</Input> */}

@@ -37,7 +37,7 @@ const modulesSlice = createSlice({
                 toAdd["color"] = state.modules.length
                 state.modules = state.modules.concat(toAdd)
             }
-        },
+        }, 
     }
 })
 

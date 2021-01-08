@@ -30,10 +30,10 @@ function ModulesView(props) {
         const date = (data) => {
             if(data.semesterData === undefined) {
                 return "Not offered in this Semester"
-            } else if (data.semesterData[props.semester] === undefined || data.semesterData[props.semester].examDate === undefined){
+            } else if (data.semesterData[props.semester - 1] === undefined || data.semesterData[props.semester - 1].examDate === undefined){
                 return "No Exam"
             } else {
-                return `Exam: ${format(new Date(data.semesterData[props.semester].examDate), "dd-MM-yyyy hh:mm a")}`
+                return `Exam: ${format(new Date(data.semesterData[props.semester - 1].examDate), "dd-MM-yyyy hh:mm a")}`
             }
             
         }
@@ -64,8 +64,9 @@ function ModulesView(props) {
     return (
 
         <Container style = {{marginBottom: "20px" }}>
-            <Grid container justify = "flex-end">
-                <Button onClick = {onDeleteAllModules}>Clear All Modules</Button>
+            <Grid container justify = "space-between">
+                <Typography variant = "h5">Semester {props.semester}</Typography>
+                <Button variant = "outlined" onClick = {onDeleteAllModules}>Clear All Modules</Button>
             </Grid>
             <Divider style = {{marginTop: "20px", marginBottom:"20px"}}/>
             <Grid container direction = "row" justify = "flex-start" alignItems = "top">

@@ -4,7 +4,15 @@ import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles( (theme) => ({
     cardstyle: {
-        padding: "10px"
+        padding: "2px",
+        paddingLeft: "5px"
+    },
+    title: {
+        fontSize: "0.8em",
+
+    },
+    subtitle: {
+        fontSize: "0.6em"
     }
 }))
 
@@ -45,14 +53,14 @@ function ModuleCard (props) {
     
     return (
         <Card className = {classes.cardstyle}  style = {{backgroundColor: `${props.colorPalette[props.color]}`, color: "black"}}>
-            <Grid container direction = "column" alignItems ="flex-start">
-                    <Typography variant = "subtitle2">{props.moduleCode}</Typography>
+            <Grid container direction = "column" alignItems ="flex-start" justify = "flex-start">
+                <Typography className = {classes.title} variant = "subtitle2">{props.moduleCode}</Typography>
 
-                    <Typography variant = "caption">{lessonType(props.lessonType.toLowerCase(), props.classNo)}</Typography>
+                <Typography className = {classes.subtitle} variant = "caption">{lessonType(props.lessonType.toLowerCase(), props.classNo)}</Typography>
 
-                    <Typography variant = "caption">{props.venue}</Typography>
+                <Typography className = {classes.subtitle} variant = "caption">{props.venue}</Typography>
 
-                    <Typography variant = "caption">{weeks(props.weeks)}</Typography>
+                <Typography className = {classes.subtitle} variant = "caption">{weeks(props.weeks)}</Typography>
             </Grid>
         </Card>
     )

@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Container, makeStyles, TextField } from '@material-ui/core'
+import { Box, Card, CardContent, Container, makeStyles, TextField, FormControl, InputLabel, MenuItem, Select, Grid } from '@material-ui/core'
 import React, { useEffect, useRef, useState } from 'react'
 import { fetchModule } from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
@@ -21,21 +21,38 @@ const useStyles = makeStyles((theme) => ({
   },
   daySlot: {
     minWidth: '56px',
+    minHeight: '50px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    background: theme.palette.background.default,
+    borderTop: '1px solid',
+    borderRight: '1px solid',
+    borderRightColor: theme.palette.divider,
+    borderTopColor: theme.palette.divider 
   },
-  time: {
-    paddingTop: '48px',
+  topLeft: {
+    minWidth: '56px',
+    minHeight: '50px',
+    background: theme.palette.background.default
   },
   row: {
     borderTop: '1px solid',
     borderColor: theme.palette.divider,
     minHeight: '48px',
-    background: `linear-gradient(90deg,${theme.palette.background.default} 50%,${theme.palette.background.paper} 0)`,
+    background: `linear-gradient(90deg,${theme.palette.background.default} 50%,${theme.palette.background.other} 0)`,
     // backgroundSize: '13% 13%',
   },
   slot:
   {
     borderColor: 'grey',
     borderLeft: '1px solid',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'flex-end ',
+    borderColor: 'transparent',
+    paddingBottom: '5px',
+    background: theme.palette.background.default
   },
   appBar: {
     backgroundColor: '#ececec',
@@ -71,11 +88,16 @@ const useContainerDimensions = myRef => {
   return dimensions;
 };
 
+const backgroundStyle = {
+  background: 'rgb(0,0,0,0)'
+}
+
 function App() {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const classes = useStyles();
   const startTime = '0800';
   const endTime = '1800';
+  const [semester, setSemester] = useState('1')
 
   const timeSlotCount = ((+endTime) - (+startTime)) / 100;
   const slots = Array.from({ length: timeSlotCount }, (v, i) => {
@@ -101,7 +123,7 @@ function App() {
 
   // Get all mods
   const listOfMods = useSelector(state => state.allModules.allModules);
-  const lessonPlan = generateLessonPlan(modules, 2);
+  const lessonPlan = generateLessonPlan(modules, semester);
 
   const numberOfSlots = 10;
   const timetableStartTime = '0800';
@@ -153,6 +175,22 @@ function App() {
       <Container>
         <TitleBar />
         {width/timeSlotCount}
+        <Grid container justify = "flex-end">
+          <FormControl  className={classes.formControl} >
+            <InputLabel>Semester</InputLabel>
+            <Select
+              value={semester}
+              onChange={e => setSemester(e.target.value)}
+              label="Semester"
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={1}>1</MenuItem>
+              <MenuItem value={2}>2</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
           <Box>
             <Rnd
               default={{
@@ -187,11 +225,11 @@ function App() {
           </Box>
         <Card className={classes.timetable}>       
           <Box display="flex">
-            <Box className={classes.daySlot}>
+            <Box className={classes.topLeft}>
             </Box>
             {
               slots.map(slot =>
-                <Box flex='1' className={`${classes.slot} ${classes.time}`}>
+                <Box flex='1' className={classes.slot} alignItems = "center" >
                   {slot.start}
                 </Box>
               )
@@ -251,7 +289,7 @@ function App() {
                
         <ModulesView
             data = {modules}
-            semester = {1} // 0 for sem 1 1 for sem 2
+            semester = {semester} // 0 for sem 1 1 for sem 2
             colorPalette = {colorPalette}
           />
       </Container>
