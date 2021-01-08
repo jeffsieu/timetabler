@@ -85,7 +85,7 @@ function App() {
     <div className="App">
       <Container>
         <div className={classes.title}>
-          <ScheduleIcon fontSize="large" style={{ marginRight: '0.5rem' }}/>
+          <ScheduleIcon fontSize="large" style={{ marginRight: '0.25em' }}/>
           <Typography variant="h4" >         
             timetabler
           </Typography>
@@ -121,7 +121,7 @@ function App() {
         </Card>
         <AddMods 
           listOfMods={listOfMods}
-          onTextChange = {onTextChange}
+          onTextChange={onTextChange}
         />
         <form onSubmit={submitModule}>
           <TextField onChange={onTextChange} inputProps={{style: {textTransform: 'uppercase'}}}>

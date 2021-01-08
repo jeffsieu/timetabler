@@ -5,6 +5,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles((theme) => ({
   width: {
+    margin: '1em 0em',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
