@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
   },
   daySlot: {
     minWidth: '56px',
-<<<<<<< HEAD
     minHeight: '50px',
     display: 'flex',
     justifyContent: 'center',
@@ -37,15 +36,6 @@ const useStyles = makeStyles((theme) => ({
     minWidth: '56px',
     minHeight: '50px',
     background: theme.palette.background.default
-=======
-    paddingTop: '14px',
-    borderTop: '1px solid',
-    borderColor: theme.palette.divider,
-  },
-  time: {
-    paddingTop: '16px',
-    paddingBottom: '16px',
->>>>>>> f59c9e655e56e299627c798044c2c6b185bc556a
   },
   row: {
     borderTop: '1px solid',
@@ -185,7 +175,6 @@ function App() {
     <div className="App">
       <Container>
         <TitleBar />
-<<<<<<< HEAD
         {width/timeSlotCount}
         <Grid container justify = "flex-end">
           <FormControl  className={classes.formControl} >
@@ -228,34 +217,6 @@ function App() {
               resizeGrid={[slotWidth, 0]}
               bounds='window'
             >
-=======
-        {width / timeSlotCount}
-        <Box>
-          <Rnd
-            default={{
-              x: offsetLeft + 56,
-              y: offsetTop,
-              width: slotWidth,
-            }}
-            minWidth={slotWidth}
-            dragAxis="x"
-
-            enableResizing={{
-              bottom: false,
-              bottomLeft: false,
-              bottomRight: false,
-              left: true,
-              right: true,
-              top: false,
-              topLeft: false,
-              topRight: false,
-
-            }}
-            dragGrid={[slotWidth, 0]}
-            resizeGrid={[slotWidth, 0]}
-            bounds='window'
-          >
->>>>>>> f59c9e655e56e299627c798044c2c6b185bc556a
             <div style={{ margin: 0, height: '48px' }}>
               <Card height='40px'>
                 bruh
@@ -269,12 +230,7 @@ function App() {
             </Box>
             {
               slots.map(slot =>
-<<<<<<< HEAD
                 <Box flex='1' className={classes.slot} alignItems = "center" >
-=======
-                <Box flex='1' textAlign="center" fontWeight='bold'
-                  className={`${classes.slot} ${classes.time}`}>
->>>>>>> f59c9e655e56e299627c798044c2c6b185bc556a
                   {slot.start}
                 </Box>
               )
@@ -333,17 +289,10 @@ function App() {
         />
 
         <ModulesView
-<<<<<<< HEAD
             data = {modules}
             semester = {semester} // 0 for sem 1 1 for sem 2
             colorPalette = {colorPalette}
           />
-=======
-          data={modules}
-          semester={1} // 0 for sem 1 1 for sem 2
-          colorPalette={colorPalette}
-        />
->>>>>>> f59c9e655e56e299627c798044c2c6b185bc556a
       </Container>
     </div>
   );
