@@ -327,28 +327,6 @@ function App() {
 
                     </div>
                   }
-
-                    // {
-
-                    // }
-                    // timeSlotModules[day] ? timeSlotModules[day][slot.start]?.map(classSlot => {
-                    //   return <Box display="block">
-                    //     {classSlot.startTime}
-                    //     {slotToString(classSlot)}
-                    //   </Box>
-                    //   }
-                    // ) : null
-
-                    // <Box flex='1' className={classes.slot}>
-                    //   {
-                    //     timeSlotModules[day] ? timeSlotModules[day][slot.start]?.map(classSlot => {
-                    //       return <Box display="block">
-                    //         {slotToString(classSlot)}
-                    //       </Box>
-                    //       }
-                    //     ) : null
-                    //   }
-                    // </Box>
                   )
                 }
               </Box>
@@ -365,6 +343,7 @@ function App() {
           data={modules}
           semester={semester} // 0 for sem 1 1 for sem 2
           colorPalette={colorPalette}
+          deleteAllCustomModules = {deleteAllCustomModules}
         />
         {offsetLeft}
         {offsetTop}
