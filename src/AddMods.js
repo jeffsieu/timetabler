@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchModule, deleteModule } from './redux/modulesSlice'
-import { InputBase } from '@material-ui/core';
+import { InputBase, Input } from '@material-ui/core';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -28,6 +28,8 @@ export default function AddMods(props) {
 
   const allModules = useSelector((state) => state.allModules.allModules)
 
+
+
   const submitModule = (input) => {
     dispatch(fetchModule(input.toLocaleUpperCase()));
     setInputValue('');
@@ -40,7 +42,7 @@ export default function AddMods(props) {
         e.preventDefault();
         submitModule(inputValue)
       }}>
-        <Autocomplete
+        {/* <Autocomplete
           value={selectValue}
           onChange={(event, newValue) => {
             setSelectValue(newValue);
@@ -57,7 +59,8 @@ export default function AddMods(props) {
           options={allModules.map( modules => modules.moduleCode)}
           style={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label="Add Module" variant="outlined" />}
-        />
+        /> */}
+        <Input onChange = {e => setInputValue(e.target.value)} value = {inputValue}>Enter a module</Input>
       </form>
     </div>    
   );
