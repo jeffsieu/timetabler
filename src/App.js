@@ -1,12 +1,9 @@
-import { Box, Card, Container, FormControl, makeStyles, TextField, Typography } from '@material-ui/core'
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import { Box, Card, Container, makeStyles, TextField } from '@material-ui/core'
 import React, { useState } from 'react'
-import { fetchModule, deleteModule, re } from './redux/modulesSlice'
-import selectAllModules from './redux/modulesSlice'
+import { fetchModule } from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import TitleBar from './TitleBar.js'
 import AddMods from './AddMods'
-import { border, borderRadius } from '@material-ui/system'
-import logo from './title.png'
 
 const useStyles = makeStyles({
   title: {
@@ -38,19 +35,12 @@ const useStyles = makeStyles({
     backgroundColor: '#ececec',
     borderRadius: '8px'
   },
-  img: {
-    padding: '8px',
-    marginTop: '5px',
-    width: '30%',
-    height: 'auto',
-  }
 });
 
 function App() {
-
-  const weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const classes = useStyles();
-
+  
+  const weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];  
   const startTime = '0800';
   const endTime = '1800';
 
@@ -76,8 +66,6 @@ function App() {
     dispatch(fetchModule(input))
   }
 
-  // console.log(modules);
-
   // Get all mods
   const listOfMods = useSelector(state => state.allModules.allModules);
 
@@ -97,9 +85,7 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <Typography className={classes.appBar} variant="h4" >
-          <img src={logo} className={classes.img} />
-        </Typography>
+        <TitleBar />
         <Card>
           <Box display="flex" className={classes.row}>
             <Box width={100}>
