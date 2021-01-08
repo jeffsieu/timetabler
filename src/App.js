@@ -1,5 +1,3 @@
-import logo from './logo.svg';
-import './App.css';
 import axios from 'axios'
 import { createStore } from 'redux'
 import { createSlice } from '@reduxjs/toolkit'
@@ -8,6 +6,7 @@ import React, { useState } from 'react'
 import { fetchModule, deleteModule, re} from './redux/modulesSlice'
 import selectAllModules from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import AddMods from './AddMods'
 
 const useStyles = makeStyles({
   row: {
@@ -113,6 +112,7 @@ function App() {
             </Box>
           )}
         </Card>
+        <AddMods />
         <form onSubmit={submitModule}>
           <TextField onChange={onTextChange} inputProps={{style: {textTransform: 'uppercase'}}}>
 
