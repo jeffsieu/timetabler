@@ -1,9 +1,10 @@
 import React from 'react'
-import { Container, Grid, Divider, IconButton, Typography } from '@material-ui/core'
+import { Container, Grid, Divider, IconButton, Typography, Button } from '@material-ui/core'
 import { Clear } from '@material-ui/icons'
 import { format} from 'date-fns'
-import { deleteModule } from './redux/modulesSlice'
+import { deleteModule, deleteAllModules } from './redux/modulesSlice'
 import { useDispatch } from 'react-redux'
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord'
 
 
 
@@ -16,8 +17,13 @@ function ModulesView(props) {
     const onDeleteModule = modCode => {
         dispatch(deleteModule(modCode))
     }
+
+    const onDeleteAllModules = () => {
+        dispatch(deleteAllModules())
+    }
     
     const modules = props.data.map (item => {
+        console.log(item.key)
         if (item.moduleCredit !== undefined) {
             mc += parseInt(item.moduleCredit)
         }
@@ -34,6 +40,9 @@ function ModulesView(props) {
         return (
             <Grid item key = {item.moduleCode} xs={4} style = {{padding: "10px"}}>
                 <Grid container direction = "row" alignItems = "flex-start" justify = "space-between">
+                    <Grid item>
+                        <FiberManualRecordIcon style = {{color: `${props.colorPalette[item.color]}`}}/>
+                    </Grid>
                     <Grid item xs = {10} >
                         <Grid container direction = "column" alignItems = "flex-start">
                             <Typography variant = "subtitle2">{item.moduleCode} {item.title}</Typography>
@@ -44,7 +53,7 @@ function ModulesView(props) {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs = {2}>
+                    <Grid item xs = {1}>
                         <IconButton onClick = {() => onDeleteModule(item.moduleCode)}><Clear/></IconButton>
                     </Grid>
                 </Grid>
@@ -55,6 +64,9 @@ function ModulesView(props) {
     return (
 
         <Container style = {{marginBottom: "20px" }}>
+            <Grid container justify = "flex-end">
+                <Button onClick = {onDeleteAllModules}>Clear All Modules</Button>
+            </Grid>
             <Divider style = {{marginTop: "20px", marginBottom:"20px"}}/>
             <Grid container direction = "row" justify = "flex-start" alignItems = "top">
                 {(props.data === undefined || props.data.length === 0) ? (

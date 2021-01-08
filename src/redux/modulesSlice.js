@@ -20,24 +20,30 @@ const modulesSlice = createSlice({
     initialState,
     reducers:{
         deleteModule(state, action) {
-            console.log(action.payload)
-            const { modName } = action.payload
+            const modName = action.payload
+            console.log(modName)
             const existingModuleIndex = state.modules.findIndex(module => module.moduleCode === modName)
             state.modules.splice(existingModuleIndex, 1)
+        },
+        deleteAllModules(state, action) {
+            state.modules = []
         }
     },
     extraReducers: {
         [fetchModule.fulfilled]: (state, action) => {
             state.status = 'succeeded'
-            if (!state.modules.some(module => module.moduleCode === action.payload.moduleCode))
-                state.modules = state.modules.concat(action.payload)
+            if (!state.modules.some(module => module.moduleCode === action.payload.moduleCode)){
+                const toAdd = action.payload
+                toAdd["color"] = state.modules.length
+                state.modules = state.modules.concat(toAdd)
+            }
         },
     }
 })
 
 
 
-export const { deleteModule } = modulesSlice.actions 
+export const { deleteModule, deleteAllModules } = modulesSlice.actions 
 
 export default modulesSlice.reducer
 

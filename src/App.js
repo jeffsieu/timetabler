@@ -106,6 +106,11 @@ function App() {
   const slotToString = function(classSlot) {
     return classSlot.moduleCode + 'Class' + classSlot.classNo;
   }
+
+  // color palette
+  const colorPalette = ['#fa7a7a', '#fabc7a', '#d6fa7a', '#94e87d', '#7de8aa', '#7ddae8', '#7da1e8', '#bf7de8','#e87dc3']
+
+
   return (
     <div className="App">
       <Container>
@@ -136,7 +141,9 @@ function App() {
                     return <div style={{width: `${100/numberOfSlots * ((+slot.endTime)-(+slot.startTime)) / 100}%`, marginLeft: marginLeft +'%'}}>
                       {}
                       <ModuleCard
-                        {...slot}/>
+                        {...slot}
+                        colorPalette = {colorPalette}/>
+                        
                     </div>
                   }
                     
@@ -169,31 +176,14 @@ function App() {
         </Card>
         <AddMods
           listOfMods={listOfMods}
-          // onTextChange={onTextChange}
           modules={modules}
+          
         />
-        <form onSubmit={submitModule}>
-          <TextField onChange={(event, newValue) => {
-            setSelectValue(newValue);
-            console.log(newValue);
-            if (newValue !== null) {
-              submitModule(newValue);
-            } 
-          }} inputProps={{ style: { textTransform: 'uppercase' } }}/>
-        </form>
-        {/* 
-        {modules.length}
-        {
-          modules.map(module =>
-            <Box>
-              {module.moduleCode}
-            </Box>
-          ) 
-        } */} 
-        
+               
         <ModulesView
             data = {modules}
-            semester = {1}
+            semester = {1} // 0 for sem 1 1 for sem 2
+            colorPalette = {colorPalette}
           />
       </Container>
     </div>

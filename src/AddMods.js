@@ -27,7 +27,6 @@ export default function AddMods(props) {
   const [selectValue, setSelectValue] = useState('');
   const moduleCodes = props.modules.map(module => module.moduleCode);
   
-
   const allModules = useSelector((state) => state.allModules.allModules)
 
 

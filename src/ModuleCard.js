@@ -40,22 +40,19 @@ function ModuleCard (props) {
             return output;
         }
     }
+
+    
     
     return (
-        <Card className = {classes.cardstyle}>
+        <Card className = {classes.cardstyle}  style = {{backgroundColor: `${props.colorPalette[props.color]}`, color: "black"}}>
             <Grid container direction = "column" alignItems ="flex-start">
-                <Grid item>
                     <Typography variant = "subtitle2">{props.moduleCode}</Typography>
-                </Grid> 
-                <Grid item>
-                    <Typography variant = "body2">{lessonType(props.lessonType.toLowerCase(), props.classNo)}</Typography>
-                </Grid>
-                <Grid item>
-                    <Typography variant = "body2">{props.venue}</Typography>
-                </Grid>
-                <Grid item>
-                    <Typography variant = "body2">{weeks(props.weeks)}</Typography>
-                </Grid>
+
+                    <Typography variant = "caption">{lessonType(props.lessonType.toLowerCase(), props.classNo)}</Typography>
+
+                    <Typography variant = "caption">{props.venue}</Typography>
+
+                    <Typography variant = "caption">{weeks(props.weeks)}</Typography>
             </Grid>
         </Card>
     )
