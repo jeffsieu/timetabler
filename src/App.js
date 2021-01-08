@@ -1,14 +1,17 @@
-import axios from 'axios'
-import { createStore } from 'redux'
-import { createSlice } from '@reduxjs/toolkit'
 import { Box, Card, Container, FormControl, makeStyles, TextField, Typography } from '@material-ui/core'
+import ScheduleIcon from '@material-ui/icons/Schedule';
 import React, { useState } from 'react'
 import { fetchModule, deleteModule, re} from './redux/modulesSlice'
-import selectAllModules from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import AddMods from './AddMods'
 
 const useStyles = makeStyles({
+  title: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    margin: '0.75em 0.5em'
+  },
   row: {
     // background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
     // border: 0,
@@ -81,9 +84,12 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <Typography variant="h4">
-          timetabler
-        </Typography>
+        <div className={classes.title}>
+          <ScheduleIcon fontSize="large" style={{ marginRight: '0.5rem' }}/>
+          <Typography variant="h4" >         
+            timetabler
+          </Typography>
+        </div>      
         <Card>
           <Box display="flex" className={classes.row}>
             <Box width={100}>
