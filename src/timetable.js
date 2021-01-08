@@ -51,7 +51,7 @@ function putOneSlotLessons(lessons) {
 
 function getTimetableIndices(start, end) {
   const slotCount = ((+end) - (+start)) / 100;
-  return Array.from({ length: slotCount }, (v, i) => i);
+  return Array.from({ length: slotCount }, (v, i) => i+start);
 }
 
 function hasClash(timetable, lesson) {
@@ -120,6 +120,9 @@ function generatePermutation(lessons) {
     return [];
   }
 
+  console.log("fixed lessons");
+  console.log(unconfirmedLessons);
+
   function helper(timetable, confirmedLessons, unconfirmedLessons) {
     if (Object.keys(unconfirmedLessons).length === 0) {
       return confirmedLessons;
@@ -128,6 +131,7 @@ function generatePermutation(lessons) {
     const lessonToChoose = Object.keys(unconfirmedLessons)[0];
 
     for (let lessonSlot of unconfirmedLessons[lessonToChoose]) {
+      console.log('attempt to insert'+lessonSlot.moduleCode+lessonSlot.lessonType);
       if (hasClash(timetable, lessonSlot)) {
         continue;
       }
@@ -156,10 +160,11 @@ function generateLessonPlan(modules, semester) {
   let lessonPlan = [];
 
   if (semesterClasses[semester]) {
+    console.log(semesterClasses[semester]);
     lessonPlan = generatePermutation(semesterClasses[semester]);
   }
 
-  return lessonPlan;
+  return lessonPlan ?? [];
 }
 
 export { generateLessonPlan, dayToIndex }

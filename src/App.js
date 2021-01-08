@@ -1,13 +1,14 @@
-import { Box, Card, Container, FormControl, makeStyles, TextField, Typography } from '@material-ui/core'
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import { Box, Card, Container, makeStyles, TextField } from '@material-ui/core'
 import React, { useState } from 'react'
-import { fetchModule, deleteModule, re } from './redux/modulesSlice'
-import selectAllModules from './redux/modulesSlice'
+import { fetchModule } from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import TitleBar from './TitleBar.js'
 import AddMods from './AddMods'
 import { border, borderRadius } from '@material-ui/system'
 import logo from './title.png'
 import { generateLessonPlan, dayToIndex } from './timetable'
+import ModuleCard from './ModuleCard'
+import ModulesView from './ModulesView'
 
 const useStyles = makeStyles({
   title: {
@@ -24,6 +25,8 @@ const useStyles = makeStyles({
     borderTop: '1px solid',
     borderColor: 'grey',
     minHeight: '48px',
+    background: 'linear-gradient(90deg,#CCC 50%,transparent 0)',
+    // backgroundSize: '13% 13%',
   },
   dayOfWeek: {
     width: 100,
@@ -37,18 +40,11 @@ const useStyles = makeStyles({
     backgroundColor: '#ececec',
     borderRadius: '8px'
   },
-  img: {
-    padding: '8px',
-    marginTop: '5px',
-    width: '30%',
-    height: 'auto',
-  }
 });
 
 function App() {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const classes = useStyles();
-
   const startTime = '0800';
   const endTime = '1800';
 
@@ -81,6 +77,9 @@ function App() {
   console.log("Generated lessons:");
   console.log(lessonPlan);
 
+  const numberOfSlots = 10;
+  const timetableStartTime = '0800';
+
   const timeSlotModules = [];
   
   for (let lesson of lessonPlan) {
@@ -99,10 +98,22 @@ function App() {
   const lessonSlots = modules.map(module => module.semesterData.map(data => data.timetable));
   console.log(lessonSlots);
 
+  const lessonSlotsByDay = [[],[],[],[],[],[],[]];
+  for (var lessonSlot of lessonPlan) {
+    const dayIndex = dayToIndex(lessonSlot.day);
+    if (lessonSlotsByDay[dayIndex] === undefined)
+      lessonSlotsByDay[dayIndex] = []
+    lessonSlotsByDay[dayIndex].push(lessonSlot);
+  }
+  lessonSlotsByDay.forEach(slots => slots.sort((slot1, slot2) => slot1.startTime - slot2.startTime));
+
+  console.log(lessonSlotsByDay);
+
   const slotToString = function(classSlot) {
     return classSlot.moduleCode + 'Class' + classSlot.classNo;
   }
 
+  console.log(modules);
   if (status === 'succeeded' && typeof test !== 'undefined') {
     console.log(test);
     // modules = test.map(item => {
@@ -119,11 +130,12 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <Typography className={classes.appBar} variant="h4" >
+        {/* <Typography className={classes.appBar} variant="h4" >
           <img src={logo} className={classes.img} />
-        </Typography>
+        </Typography> */}
         <Card className={classes.timetable}>
-          <Box display="flex" className={classes.row}>
+        {/* <TitleBar /> */}
+          <Box display="flex">
             <Box width={100}>
             </Box>
             {
@@ -134,25 +146,50 @@ function App() {
               )
             }
           </Box>
-          {days.map(day =>
-            <Box display="flex" className={classes.row}>
+          {days.map((day, dayIndex) =>
+            <Box display="flex">
               <Box className={classes.dayOfWeek}>
                 {day}
               </Box>
-              {
-                slots.map(slot =>
-                  <Box flex='1' className={classes.slot}>
-                    {
-                      timeSlotModules[day] ? timeSlotModules[day][slot.start]?.map(classSlot => {
-                        return <Box display="block">
-                          {slotToString(classSlot)}
-                        </Box>
-                        }
-                      ) : null
-                    }
-                  </Box>
-                )
-              }
+              <Box display="flex" flex={1} className={classes.row} style={{backgroundSize: `${200/numberOfSlots}% ${200/numberOfSlots}%`}}>
+                {
+                  
+                  lessonSlotsByDay[dayIndex]?.map((slot, slotIndex) => {
+
+                    const leftSlotsEmpty = ((+slot.startTime)-(slotIndex === 0 ? timetableStartTime: +lessonSlotsByDay[dayIndex][slotIndex-1].endTime)) / 100;
+                    const marginLeft = leftSlotsEmpty*100/numberOfSlots;
+                    return <div style={{width: `${100/numberOfSlots * ((+slot.end)-(+slot.start)) / 100}%`, marginLeft: marginLeft +'%'}}>
+                      {`${100/numberOfSlots * ((+slot.end)-(+slot.start)) / 100}%`}
+                      {marginLeft}
+                      <ModuleCard
+                        {...slot}/>
+                    </div>
+                  }
+                    
+                    // {
+                      
+                    // }
+                    // timeSlotModules[day] ? timeSlotModules[day][slot.start]?.map(classSlot => {
+                    //   return <Box display="block">
+                    //     {classSlot.startTime}
+                    //     {slotToString(classSlot)}
+                    //   </Box>
+                    //   }
+                    // ) : null
+
+                    // <Box flex='1' className={classes.slot}>
+                    //   {
+                    //     timeSlotModules[day] ? timeSlotModules[day][slot.start]?.map(classSlot => {
+                    //       return <Box display="block">
+                    //         {slotToString(classSlot)}
+                    //       </Box>
+                    //       }
+                    //     ) : null
+                    //   }
+                    // </Box>
+                  )
+                }
+              </Box>
             </Box>
           )}
         </Card>
@@ -174,6 +211,10 @@ function App() {
             </Box>
           ) 
         }
+        {/* <ModulesView
+            data = {modules}
+            semester = {1}
+          /> */}
       </Container>
     </div>
   );
