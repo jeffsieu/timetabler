@@ -4,6 +4,8 @@ import { fetchModule } from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import TitleBar from './TitleBar.js'
 import AddMods from './AddMods'
+import Alerts from './Alerts'
+import ImportDialog from './ImportDialog'
 import { generateLessonPlan, dayToIndex } from './timetable'
 import ModuleCard from './ModuleCard'
 import ModulesView from './ModulesView'
@@ -63,6 +65,7 @@ function App() {
 
   const [inputValue, setInputValue] = useState('');
   const [selectValue, setSelectValue] = useState('');
+  const [messages, setMessages] = useState([]);
   
   const submitModule = (input) => {
     dispatch(fetchModule(input));
@@ -91,7 +94,6 @@ function App() {
     timeSlotModules[day][lesson.startTime].push(lesson); 
   }
 
-
   const lessonSlots = modules.map(module => module.semesterData.map(data => data.timetable));
 
   const lessonSlotsByDay = [[],[],[],[],[],[],[]];
@@ -106,9 +108,11 @@ function App() {
   const slotToString = function(classSlot) {
     return classSlot.moduleCode + 'Class' + classSlot.classNo;
   }
+
   return (
     <div className="App">
       <Container>
+        <Alerts messages={messages}/>
         <TitleBar />
         <Card className={classes.timetable}>       
           <Box display="flex">
@@ -116,7 +120,7 @@ function App() {
             </Box>
             {
               slots.map(slot =>
-                <Box flex='1' className={`${classes.slot} ${classes.time}`}>
+                <Box flex='1' textAlign="center" className={`${classes.slot} ${classes.time}`}>
                   {slot.start}
                 </Box>
               )
@@ -181,6 +185,7 @@ function App() {
             } 
           }} inputProps={{ style: { textTransform: 'uppercase' } }}/>
         </form>
+        <ImportDialog msg={setMessages}/>
         {/* 
         {modules.length}
         {
