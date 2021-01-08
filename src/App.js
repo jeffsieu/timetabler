@@ -207,12 +207,12 @@ function App() {
               {module.moduleCode}
             </Box>
           ) 
-        }
-        {/* <ModulesView
+        } */} 
+        
         <ModulesView
             data = {modules}
             semester = {1}
-          /> */}
+          />
       </Container>
     </div>
   );

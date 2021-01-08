@@ -37,6 +37,8 @@ export default function AddMods(props) {
     setInputValue('');
     setSelectValue('');
   }
+
+  const mapped = allModules.map( modules => modules.moduleCode)
  
   return (
     <div className={classes.width}>
@@ -44,7 +46,7 @@ export default function AddMods(props) {
         e.preventDefault();
         submitModule(inputValue)
       }}>
-        {/* <Autocomplete
+        <Autocomplete
           value={selectValue}
           onChange={(event, newValue) => {
             setSelectValue(newValue);
@@ -58,11 +60,11 @@ export default function AddMods(props) {
             setInputValue(newInputValue);
           }}
           id="mod-search"
-          options={allModules.map( modules => modules.moduleCode)}
+          options={mapped}
           style={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label="Add Module" variant="outlined" />}
-        /> */}
-        <Input onChange = {e => setInputValue(e.target.value)} value = {inputValue}>Enter a module</Input>
+        />
+        {/* <Input onChange = {e => setInputValue(e.target.value)} value = {inputValue}>Enter a module</Input> */}
       </form>
     </div>    
   );
