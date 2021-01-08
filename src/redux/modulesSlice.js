@@ -10,10 +10,8 @@ const initialState = {
 
 export const fetchModule = createAsyncThunk('modules/fetchModule', async (moduleCode) => {
     const result = await axios.get(`https://api.nusmods.com/v2/2020-2021/modules/${moduleCode}.json`)
-    console.log(result)
     return result.data
 })
-
 
 
 
@@ -22,26 +20,18 @@ const modulesSlice = createSlice({
     initialState,
     reducers:{
         deleteModule(state, action) {
-            console.log(action)
-            const moduleName = action.payload
-            const existingModuleIndex = state.modules.modules.findIndex(module => module.moduleCode === moduleName)
-            state.modules.module.splice(existingModuleIndex, 1)
+            console.log(action.payload)
+            const { modName } = action.payload
+            const existingModuleIndex = state.modules.findIndex(module => module.moduleCode === modName)
+            state.modules.splice(existingModuleIndex, 1)
         }
-
     },
     extraReducers: {
-        [fetchModule.pending]: (state, action) => {
-            state.status = 'loading'
-        },
         [fetchModule.fulfilled]: (state, action) => {
             state.status = 'succeeded'
             if (!state.modules.some(module => module.moduleCode === action.payload.moduleCode))
                 state.modules = state.modules.concat(action.payload)
         },
-        [fetchModule.rejected]: (state, action) => {
-            state.status = 'failed'
-            state.error = action.error.message
-        }
     }
 })
 
