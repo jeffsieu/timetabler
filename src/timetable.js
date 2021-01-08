@@ -16,13 +16,17 @@ function makeSemesterClasses(modules) {
       for (let lesson of semesterObject.timetable) {
         const lessonType = lesson.lessonType;
         const key = module.moduleCode + lessonType;
+        const classNo = lesson.classNo;
         if (semesterClasses[semester][key] === undefined) {
-          semesterClasses[semester][key] = [];
+          semesterClasses[semester][key] = {};
+        }
+        if (semesterClasses[semester][key][classNo] === undefined) {
+          semesterClasses[semester][key][classNo] = [];
         }
 
         const extendedLessonObject = JSON.parse(JSON.stringify(lesson))
         extendedLessonObject['moduleCode'] = module.moduleCode;
-        semesterClasses[semester][key].push(extendedLessonObject);
+        semesterClasses[semester][key][classNo].push(extendedLessonObject);
       }
     }
   }
@@ -32,16 +36,13 @@ function makeSemesterClasses(modules) {
 function putOneSlotLessons(lessons) {
   let timetable = makeEmptyTimetable();
   lessons = JSON.parse(JSON.stringify(lessons));
-  for (let [key, lessonSlots] of Object.entries(lessons)) {
-    if (lessonSlots.length === 1) {
-      const slot = lessonSlots[0];
-      console.log("slot");
-      console.log(slot);
-      if (hasClash(timetable, slot)) {
-        console.log("got clash");
+  for (let [key, classNos] of Object.entries(lessons)) {
+    if (classNos.length === 1) {
+      const slots = classNos[0];
+      if (hasClash(timetable, slots)) {
         return [null, null];
       } else {
-        timetable = addToTimetable(timetable, slot);
+        timetable = addToTimetable(timetable, slots);
         delete lessons[key];
       }
     }
@@ -54,12 +55,14 @@ function getTimetableIndices(start, end) {
   return Array.from({ length: slotCount }, (v, i) => i+start);
 }
 
-function hasClash(timetable, lesson) {
-  const lessonStart = lesson.startTime;
-  const lessonEnd = lesson.endTime;
-  const day = dayToIndex(lesson.day);
+function hasClash(timetable, lessons) {
+  return lessons.some((lesson) => {
+    const lessonStart = lesson.startTime;
+    const lessonEnd = lesson.endTime;
+    const day = dayToIndex(lesson.day);
 
-  return getTimetableIndices(lessonStart, lessonEnd).some((i) => timetable[day][i]);
+    return getTimetableIndices(lessonStart, lessonEnd).some((i) => timetable[day][i]);
+  });
 }
 
 function clone2d(arr) {
@@ -91,14 +94,6 @@ function makeEmptyTimetable() {
   return Array.from({ length: 7 }, (v, i) => []);
 }
 
-function makeTimetable(confirmedLessons) {
-  let timetable = makeEmptyTimetable();
-  for (let lesson in confirmedLessons) {
-    timetable = addToTimetable(timetable, lesson);
-  }
-  return timetable;
-}
-
 function addToTimetable(timetable, lesson) {
   const newTimetable = clone2d(timetable);
   const lessonStart = lesson.startTime;
@@ -120,27 +115,23 @@ function generatePermutation(lessons) {
     return [];
   }
 
-  console.log("fixed lessons");
-  console.log(unconfirmedLessons);
-
   function helper(timetable, confirmedLessons, unconfirmedLessons) {
     if (Object.keys(unconfirmedLessons).length === 0) {
       return confirmedLessons;
     }
 
-    const lessonToChoose = Object.keys(unconfirmedLessons)[0];
+    const lessonType = Object.keys(unconfirmedLessons)[0];
 
-    for (let lessonSlot of unconfirmedLessons[lessonToChoose]) {
-      console.log('attempt to insert'+lessonSlot.moduleCode+lessonSlot.lessonType);
-      if (hasClash(timetable, lessonSlot)) {
+    for (let classInstance of Object.values(unconfirmedLessons[lessonType])) {
+      if (hasClash(timetable, classInstance)) {
         continue;
       }
-      const newTimetable = addToTimetable(timetable, lessonSlot);
+      const newTimetable = addToTimetable(timetable, classInstance);
       const newConfirmedLessons = [...confirmedLessons];
       const newUnconfirmedLessons = JSON.parse(JSON.stringify(unconfirmedLessons));
 
-      newConfirmedLessons.push(lessonSlot);
-      delete newUnconfirmedLessons[lessonToChoose];
+      newConfirmedLessons.push(...classInstance);
+      delete newUnconfirmedLessons[lessonType];
 
       const permutation = helper(newTimetable, newConfirmedLessons, newUnconfirmedLessons);
 
@@ -159,8 +150,9 @@ function generateLessonPlan(modules, semester) {
   const semesterClasses = makeSemesterClasses(modules);
   let lessonPlan = [];
 
+  console.log(semesterClasses);
+
   if (semesterClasses[semester]) {
-    console.log(semesterClasses[semester]);
     lessonPlan = generatePermutation(semesterClasses[semester]);
   }
 
