@@ -19,6 +19,8 @@ export default function AddMods(props) {
   const classes = useStyles();
   const [inputValue, setInputValue] = useState('');
   const [selectValue, setSelectValue] = useState('');
+  const moduleCodes = props.modules.map(module => module.moduleCode);
+  
   return (
     <div className={classes.width}>
       {/* <Autocomplete

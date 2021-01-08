@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import AddMods from './AddMods'
 import { border, borderRadius } from '@material-ui/system'
 import logo from './title.png'
+import { generateLessonPlan, dayToIndex } from './timetable'
 
 const useStyles = makeStyles({
   title: {
@@ -15,24 +16,22 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     margin: '0.75em 0.5em'
   },
+  timetable: {
+    borderColor: 'grey'
+  },
   row: {
-    // background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-    // border: 0,
     borderRadius: 3,
-    // color: 'white',
-    height: 48,
     borderTop: '1px solid',
-    borderColor: 'black',
-    // padding: '0 30px',
+    borderColor: 'grey',
+    minHeight: '48px',
   },
   dayOfWeek: {
-    // boxShadow: '10px 0 5px -2px #888',
     width: 100,
   },
   slot:
   {
+    borderColor: 'grey',
     borderLeft: '1px solid',
-    borderColor: 'black',
   },
   appBar: {
     backgroundColor: '#ececec',
@@ -47,8 +46,7 @@ const useStyles = makeStyles({
 });
 
 function App() {
-
-  const weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const classes = useStyles();
 
   const startTime = '0800';
@@ -76,10 +74,34 @@ function App() {
     dispatch(fetchModule(input))
   }
 
-  // console.log(modules);
-
   // Get all mods
   const listOfMods = useSelector(state => state.allModules.allModules);
+  const lessonPlan = generateLessonPlan(modules, 1);
+
+  console.log("Generated lessons:");
+  console.log(lessonPlan);
+
+  const timeSlotModules = [];
+  
+  for (let lesson of lessonPlan) {
+    const day = dayToIndex(lesson.day);
+    if (timeSlotModules[day] === undefined) {
+      timeSlotModules[day] = {};
+    }
+
+    if (timeSlotModules[day][lesson.startTime] === undefined) {
+      timeSlotModules[day][lesson.startTime] = [];
+    }
+    timeSlotModules[day][lesson.startTime].push(lesson); 
+  }
+
+
+  const lessonSlots = modules.map(module => module.semesterData.map(data => data.timetable));
+  console.log(lessonSlots);
+
+  const slotToString = function(classSlot) {
+    return classSlot.moduleCode + 'Class' + classSlot.classNo;
+  }
 
   if (status === 'succeeded' && typeof test !== 'undefined') {
     console.log(test);
@@ -100,29 +122,34 @@ function App() {
         <Typography className={classes.appBar} variant="h4" >
           <img src={logo} className={classes.img} />
         </Typography>
-        <Card>
+        <Card className={classes.timetable}>
           <Box display="flex" className={classes.row}>
             <Box width={100}>
             </Box>
-
             {
               slots.map(slot =>
-                <Box flex='1' className={classes.slot} borderColor="black">
+                <Box flex='1' className={classes.slot}>
                   {slot.start}
                 </Box>
               )
             }
           </Box>
-          {weeks.map(week =>
+          {days.map(day =>
             <Box display="flex" className={classes.row}>
               <Box className={classes.dayOfWeek}>
-                {week}
+                {day}
               </Box>
-
               {
                 slots.map(slot =>
-                  <Box flex='1' className={classes.slot} borderColor="black">
-                    {slot.start}
+                  <Box flex='1' className={classes.slot}>
+                    {
+                      timeSlotModules[day] ? timeSlotModules[day][slot.start]?.map(classSlot => {
+                        return <Box display="block">
+                          {slotToString(classSlot)}
+                        </Box>
+                        }
+                      ) : null
+                    }
                   </Box>
                 )
               }
@@ -132,6 +159,7 @@ function App() {
         <AddMods
           listOfMods={listOfMods}
           onTextChange={onTextChange}
+          modules={modules}
         />
         <form onSubmit={submitModule}>
           <TextField onChange={onTextChange} inputProps={{ style: { textTransform: 'uppercase' } }}>
@@ -144,7 +172,7 @@ function App() {
             <Box>
               {module.moduleCode}
             </Box>
-          )
+          ) 
         }
       </Container>
     </div>
