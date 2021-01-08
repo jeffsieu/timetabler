@@ -1,4 +1,4 @@
-import { Box, Card, Container, makeStyles } from '@material-ui/core'
+import { Box, Card, Container, makeStyles, TextField } from '@material-ui/core'
 import React, { useState } from 'react'
 import { fetchModule } from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
@@ -8,7 +8,7 @@ import { generateLessonPlan, dayToIndex } from './timetable'
 import ModuleCard from './ModuleCard'
 import ModulesView from './ModulesView'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   title: {
     display: 'flex',
     alignItems: 'center',
@@ -16,14 +16,16 @@ const useStyles = makeStyles({
     margin: '0.75em 0.5em'
   },
   timetable: {
-    borderColor: 'grey'
+    borderColor: theme.palette.divider,
+  },
+  time: {
+    paddingTop: '48px',
   },
   row: {
-    borderRadius: 3,
     borderTop: '1px solid',
-    borderColor: 'grey',
+    borderColor: theme.palette.divider,
     minHeight: '48px',
-    background: 'linear-gradient(90deg,#CCC 50%,transparent 0)',
+    background: `linear-gradient(90deg,${theme.palette.background.default} 50%,${theme.palette.background.paper} 0)`,
     // backgroundSize: '13% 13%',
   },
   dayOfWeek: {
@@ -38,7 +40,7 @@ const useStyles = makeStyles({
     backgroundColor: '#ececec',
     borderRadius: '8px'
   },
-});
+}));
 
 function App() {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -59,21 +61,18 @@ function App() {
 
   const modules = useSelector((state) => state.modules.modules)
 
-  const [input, setInput] = useState('')
-  const status = useSelector((state) => state.modules.status)
-  const onTextChange = e => setInput(e.target.value.toUpperCase())
-
-  const submitModule = (event) => {
-    event.preventDefault();
-    dispatch(fetchModule(input))
+  const [inputValue, setInputValue] = useState('');
+  const [selectValue, setSelectValue] = useState('');
+  
+  const submitModule = (input) => {
+    dispatch(fetchModule(input));
+    setInputValue('');
+    setSelectValue('');
   }
 
   // Get all mods
   const listOfMods = useSelector(state => state.allModules.allModules);
-  const lessonPlan = generateLessonPlan(modules, 1);
-
-  console.log("Generated lessons:");
-  console.log(lessonPlan);
+  const lessonPlan = generateLessonPlan(modules, 2);
 
   const numberOfSlots = 10;
   const timetableStartTime = '0800';
@@ -94,7 +93,6 @@ function App() {
 
 
   const lessonSlots = modules.map(module => module.semesterData.map(data => data.timetable));
-  console.log(lessonSlots);
 
   const lessonSlotsByDay = [[],[],[],[],[],[],[]];
   for (var lessonSlot of lessonPlan) {
@@ -105,26 +103,9 @@ function App() {
   }
   lessonSlotsByDay.forEach(slots => slots.sort((slot1, slot2) => slot1.startTime - slot2.startTime));
 
-  console.log(lessonSlotsByDay);
-
   const slotToString = function(classSlot) {
     return classSlot.moduleCode + 'Class' + classSlot.classNo;
   }
-
-  console.log(modules);
-  if (status === 'succeeded' && typeof test !== 'undefined') {
-    console.log(test);
-    // modules = test.map(item => {
-    //   console.log('test')
-    //   // return (
-    //   //   <div key={item.moduleCode}>
-    //   //     <p>{item.moduleCode}</p>
-    //   //     <button value={item.moduleCode} onClick={deleteModule} />
-    //   //   </div>
-    //   // )
-    // })
-  }
-
   return (
     <div className="App">
       <Container>
@@ -138,7 +119,7 @@ function App() {
             </Box>
             {
               slots.map(slot =>
-                <Box flex='1' className={classes.slot}>
+                <Box flex='1' className={`${classes.slot} ${classes.time}`}>
                   {slot.start}
                 </Box>
               )
@@ -155,9 +136,8 @@ function App() {
                   lessonSlotsByDay[dayIndex]?.map((slot, slotIndex) => {
                     const leftSlotsEmpty = ((+slot.startTime)-(slotIndex === 0 ? timetableStartTime: +lessonSlotsByDay[dayIndex][slotIndex-1].endTime)) / 100;
                     const marginLeft = leftSlotsEmpty*100/numberOfSlots;
-                    return <div style={{width: `${100/numberOfSlots * ((+slot.end)-(+slot.start)) / 100}%`, marginLeft: marginLeft +'%'}}>
-                      {`${100/numberOfSlots * ((+slot.end)-(+slot.start)) / 100}%`}
-                      {marginLeft}
+                    return <div style={{width: `${100/numberOfSlots * ((+slot.endTime)-(+slot.startTime)) / 100}%`, marginLeft: marginLeft +'%'}}>
+                      {}
                       <ModuleCard
                         {...slot}/>
                     </div>
@@ -192,14 +172,19 @@ function App() {
         </Card>
         <AddMods
           listOfMods={listOfMods}
-          onTextChange={onTextChange}
+          // onTextChange={onTextChange}
           modules={modules}
         />
-        {/* <form onSubmit={submitModule}>
-          <TextField onChange={onTextChange} inputProps={{ style: { textTransform: 'uppercase' } }}>
-
-          </TextField>
+        <form onSubmit={submitModule}>
+          <TextField onChange={(event, newValue) => {
+            setSelectValue(newValue);
+            console.log(newValue);
+            if (newValue !== null) {
+              submitModule(newValue);
+            } 
+          }} inputProps={{ style: { textTransform: 'uppercase' } }}/>
         </form>
+        {/* 
         {modules.length}
         {
           modules.map(module =>
