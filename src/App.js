@@ -1,10 +1,10 @@
-import { Box, Card, Container, makeStyles, TextField } from '@material-ui/core'
+import { Box, Card, Container, makeStyles } from '@material-ui/core'
 import React, { useState } from 'react'
 import { fetchModule } from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import TitleBar from './TitleBar.js'
 import AddMods from './AddMods'
-import Day from './Day'
+import { generateLessonPlan, dayToIndex } from './timetable'
 import ModuleCard from './ModuleCard'
 import ModulesView from './ModulesView'
 
@@ -15,24 +15,24 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     margin: '0.75em 0.5em'
   },
+  timetable: {
+    borderColor: 'grey'
+  },
   row: {
-    // background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-    // border: 0,
     borderRadius: 3,
-    // color: 'white',
-    height: 48,
     borderTop: '1px solid',
-    borderColor: 'black',
-    // padding: '0 30px',
+    borderColor: 'grey',
+    minHeight: '48px',
+    background: 'linear-gradient(90deg,#CCC 50%,transparent 0)',
+    // backgroundSize: '13% 13%',
   },
   dayOfWeek: {
-    // boxShadow: '10px 0 5px -2px #888',
     width: 100,
   },
   slot:
   {
+    borderColor: 'grey',
     borderLeft: '1px solid',
-    borderColor: 'black',
   },
   appBar: {
     backgroundColor: '#ececec',
@@ -41,9 +41,8 @@ const useStyles = makeStyles({
 });
 
 function App() {
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const classes = useStyles();
-  
-  const weeks = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];  
   const startTime = '0800';
   const endTime = '1800';
 
@@ -71,6 +70,47 @@ function App() {
 
   // Get all mods
   const listOfMods = useSelector(state => state.allModules.allModules);
+  const lessonPlan = generateLessonPlan(modules, 1);
+
+  console.log("Generated lessons:");
+  console.log(lessonPlan);
+
+  const numberOfSlots = 10;
+  const timetableStartTime = '0800';
+
+  const timeSlotModules = [];
+  
+  for (let lesson of lessonPlan) {
+    const day = dayToIndex(lesson.day);
+    if (timeSlotModules[day] === undefined) {
+      timeSlotModules[day] = {};
+    }
+
+    if (timeSlotModules[day][lesson.startTime] === undefined) {
+      timeSlotModules[day][lesson.startTime] = [];
+    }
+    timeSlotModules[day][lesson.startTime].push(lesson); 
+  }
+
+
+  const lessonSlots = modules.map(module => module.semesterData.map(data => data.timetable));
+  console.log(lessonSlots);
+
+  const lessonSlotsByDay = [[],[],[],[],[],[],[]];
+  for (var lessonSlot of lessonPlan) {
+    const dayIndex = dayToIndex(lessonSlot.day);
+    if (lessonSlotsByDay[dayIndex] === undefined)
+      lessonSlotsByDay[dayIndex] = []
+    lessonSlotsByDay[dayIndex].push(lessonSlot);
+  }
+  lessonSlotsByDay.forEach(slots => slots.sort((slot1, slot2) => slot1.startTime - slot2.startTime));
+
+  console.log(lessonSlotsByDay);
+
+  const slotToString = function(classSlot) {
+    return classSlot.moduleCode + 'Class' + classSlot.classNo;
+  }
+
   console.log(modules);
   if (status === 'succeeded' && typeof test !== 'undefined') {
     console.log(test);
@@ -88,25 +128,72 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <TitleBar />
-        <Card>
-          {[''].concat(weeks).map((day, index) =>
-            <Box display="flex" className={classes.row}>
-              <Day label={day} ind={index} />
+        {/* <Typography className={classes.appBar} variant="h4" >
+          <img src={logo} className={classes.img} />
+        </Typography> */}
+        <Card className={classes.timetable}>
+        {/* <TitleBar /> */}
+          <Box display="flex">
+            <Box width={100}>
+            </Box>
+            {
+              slots.map(slot =>
+                <Box flex='1' className={classes.slot}>
+                  {slot.start}
+                </Box>
+              )
+            }
+          </Box>
+          {days.map((day, dayIndex) =>
+            <Box display="flex">
+              <Box className={classes.dayOfWeek}>
+                {day}
+              </Box>
+              <Box display="flex" flex={1} className={classes.row} style={{backgroundSize: `${200/numberOfSlots}% ${200/numberOfSlots}%`}}>
+                {
+                  
+                  lessonSlotsByDay[dayIndex]?.map((slot, slotIndex) => {
+                    const leftSlotsEmpty = ((+slot.startTime)-(slotIndex === 0 ? timetableStartTime: +lessonSlotsByDay[dayIndex][slotIndex-1].endTime)) / 100;
+                    const marginLeft = leftSlotsEmpty*100/numberOfSlots;
+                    return <div style={{width: `${100/numberOfSlots * ((+slot.end)-(+slot.start)) / 100}%`, marginLeft: marginLeft +'%'}}>
+                      {`${100/numberOfSlots * ((+slot.end)-(+slot.start)) / 100}%`}
+                      {marginLeft}
+                      <ModuleCard
+                        {...slot}/>
+                    </div>
+                  }
+                    
+                    // {
+                      
+                    // }
+                    // timeSlotModules[day] ? timeSlotModules[day][slot.start]?.map(classSlot => {
+                    //   return <Box display="block">
+                    //     {classSlot.startTime}
+                    //     {slotToString(classSlot)}
+                    //   </Box>
+                    //   }
+                    // ) : null
 
-              {
-                slots.map(slot =>
-                  <Box flex='1' className={classes.slot} borderColor="black">
-                    {slot.start}
-                  </Box>
-                )
-              }
+                    // <Box flex='1' className={classes.slot}>
+                    //   {
+                    //     timeSlotModules[day] ? timeSlotModules[day][slot.start]?.map(classSlot => {
+                    //       return <Box display="block">
+                    //         {slotToString(classSlot)}
+                    //       </Box>
+                    //       }
+                    //     ) : null
+                    //   }
+                    // </Box>
+                  )
+                }
+              </Box>
             </Box>
           )}
         </Card>
         <AddMods
           listOfMods={listOfMods}
           onTextChange={onTextChange}
+          modules={modules}
         />
         {/* <form onSubmit={submitModule}>
           <TextField onChange={onTextChange} inputProps={{ style: { textTransform: 'uppercase' } }}>
@@ -119,19 +206,13 @@ function App() {
             <Box>
               {module.moduleCode}
             </Box>
-          )
+          ) 
         }
-        <ModuleCard 
-            moduleCode = "CS1101S"
-            lesson = "Recitation"
-            className = "E09"
-            venue = "RM1-SR??"
-            weeks = {[1,2,3,4,5,6,7,8,9,10]}
-        /> */}
+        {/* <ModulesView
         <ModulesView
             data = {modules}
             semester = {1}
-          />
+          /> */}
       </Container>
     </div>
   );
