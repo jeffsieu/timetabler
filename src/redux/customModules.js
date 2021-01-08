@@ -3,7 +3,7 @@ import { nanoid } from '@reduxjs/toolkit'
 
 
 const initialState = {
-    customModule: [],
+    customModules: [],
     status: 'idle',
     error: null
 }
@@ -16,11 +16,11 @@ const customModulesSlice = createSlice({
         addCustomModule(state, action) {
             const payload = action.payload
             payload['id'] = nanoid()
-            state.customModule.push(payload)
+            state.customModules.push(payload)
         },
         deleteCustomModules(state, action) {
             const id = action.payload
-            const index = state.customModule.findIndex(module => module.id === id)
+            const index = state.customModules.findIndex(module => module.id === id)
             state.customModules.splice(index, 1)
         }, 
         deleteAllCustomModules(state, action) {
@@ -28,8 +28,8 @@ const customModulesSlice = createSlice({
         },
         updateCustomModules (state, action) {
             const id = action.payload.id
-            const index = state.customModule.findIndex(module => module.id === id)
-            state.customModule[index] = action.payload
+            const index = state.customModules.findIndex(module => module.id === id)
+            state.customModules[index] = action.payload
         }
     }
 })
