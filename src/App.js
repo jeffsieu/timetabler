@@ -4,6 +4,8 @@ import { fetchModule } from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import TitleBar from './TitleBar.js'
 import AddMods from './AddMods'
+import DayBox from './DayBox'
+import TimeBox from './DayBox'
 import { generateLessonPlan, dayToIndex } from './timetable'
 import ModuleCard from './ModuleCard'
 import ModulesView from './ModulesView'
@@ -19,15 +21,11 @@ const useStyles = makeStyles({
     borderColor: 'grey'
   },
   row: {
-    borderRadius: 3,
     borderTop: '1px solid',
     borderColor: 'grey',
     minHeight: '48px',
     background: 'linear-gradient(90deg,#CCC 50%,transparent 0)',
     // backgroundSize: '13% 13%',
-  },
-  dayOfWeek: {
-    width: 100,
   },
   slot:
   {
@@ -128,27 +126,23 @@ function App() {
   return (
     <div className="App">
       <Container>
-        {/* <Typography className={classes.appBar} variant="h4" >
-          <img src={logo} className={classes.img} />
-        </Typography> */}
-        <Card className={classes.timetable}>
-        {/* <TitleBar /> */}
+        <TitleBar />
+        <Card className={classes.timetable}>       
           <Box display="flex">
             <Box width={100}>
             </Box>
             {
               slots.map(slot =>
-                <Box flex='1' className={classes.slot}>
-                  {slot.start}
-                </Box>
+                // <Box flex={1} className={classes.slot}>
+                //   {slot.start}
+                // </Box>
+                <TimeBox label={slot.start}/>
               )
             }
           </Box>
           {days.map((day, dayIndex) =>
             <Box display="flex">
-              <Box className={classes.dayOfWeek}>
-                {day}
-              </Box>
+              <DayBox label={day} />
               <Box display="flex" flex={1} className={classes.row} style={{backgroundSize: `${200/numberOfSlots}% ${200/numberOfSlots}%`}}>
                 {
                   
