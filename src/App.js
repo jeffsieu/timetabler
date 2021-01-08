@@ -1,5 +1,5 @@
-import { Box, Card, Container, makeStyles, TextField } from '@material-ui/core'
-import React, { useState } from 'react'
+import { Box, Card, CardContent, Container, makeStyles, TextField } from '@material-ui/core'
+import React, { useEffect, useRef, useState } from 'react'
 import { fetchModule } from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import TitleBar from './TitleBar.js'
@@ -7,6 +7,7 @@ import AddMods from './AddMods'
 import { generateLessonPlan, dayToIndex } from './timetable'
 import ModuleCard from './ModuleCard'
 import ModulesView from './ModulesView'
+import { Rnd } from 'react-rnd';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -41,6 +42,34 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '8px'
   },
 }));
+
+
+const useContainerDimensions = myRef => {
+  const getDimensions = () => ({
+    width: myRef.current.offsetWidth,
+    height: myRef.current.offsetHeight
+  })
+
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
+  useEffect(() => {
+    const handleResize = () => {
+      setDimensions(getDimensions())
+    }
+
+    if (myRef.current) {
+      setDimensions(getDimensions())
+    }
+
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [myRef])
+
+  return dimensions;
+};
 
 function App() {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -110,11 +139,52 @@ function App() {
   // color palette
   const colorPalette = ['#fa7a7a', '#fabc7a', '#d6fa7a', '#94e87d', '#7de8aa', '#7ddae8', '#7da1e8', '#bf7de8','#e87dc3']
 
+  const componentRef = useRef();
+  const { width, height } = useContainerDimensions(componentRef)
+  const offsetLeft = componentRef.current?.offsetLeft ?? 0;
+  const offsetTop = componentRef.current?.offsetTop ?? 0;
+
+  const slotWidth = width / timeSlotCount;
+
+  // console.log(componentRef);
 
   return (
     <div className="App">
       <Container>
         <TitleBar />
+        {width/timeSlotCount}
+          <Box>
+            <Rnd
+              default={{
+                x: offsetLeft + 56,
+                y: offsetTop,
+                width: slotWidth, 
+              }}
+              minWidth={slotWidth}
+              dragAxis="x"
+  
+              enableResizing={{
+                bottom: false,
+                bottomLeft: false,
+                bottomRight: false,
+                left: true,
+                right: true,
+                top: false,
+                topLeft: false,
+                topRight: false,
+    
+              }}
+              dragGrid={[slotWidth, 0]}
+              resizeGrid={[slotWidth, 0]}
+              bounds='window'
+            >
+            <div style={{ margin: 0, height: '48px' }}>
+              <Card height='40px'>
+                bruh
+              </Card>
+            </div>
+            </Rnd>
+          </Box>
         <Card className={classes.timetable}>       
           <Box display="flex">
             <Box className={classes.daySlot}>
@@ -132,9 +202,8 @@ function App() {
               <Box className={classes.daySlot}>
                 {day}
               </Box>
-              <Box display="flex" flex={1} className={classes.row} style={{backgroundSize: `${200/numberOfSlots}% ${200/numberOfSlots}%`}}>
+              <Box ref={dayIndex === 0 ? componentRef : null} display="flex" flex={1} className={classes.row} style={{backgroundSize: `${200/numberOfSlots}% ${200/numberOfSlots}%`}}>
                 {
-                  
                   lessonSlotsByDay[dayIndex]?.map((slot, slotIndex) => {
                     const leftSlotsEmpty = ((+slot.startTime)-(slotIndex === 0 ? timetableStartTime: +lessonSlotsByDay[dayIndex][slotIndex-1].endTime)) / 100;
                     const marginLeft = leftSlotsEmpty*100/numberOfSlots;
