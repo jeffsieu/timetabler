@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
+
 
 const initialState = {
     modules: [],
@@ -7,27 +8,36 @@ const initialState = {
     error: null
 }
 
-export default fetchModules = () => async (moduleCode) => {
-    const result = await axios.get(`https://api.nusmods.com/v2/2018-2019/modules/${moduleCode}.json`)
-    return result
-}
+export const fetchModule = createAsyncThunk('modules/fetchModule', async (moduleCode) => {
+    const result = await axios.get(`https://api.nusmods.com/v2/2020-2021/modules/${moduleCode}.json`)
+    console.log(result)
+    return result.data
+})
 
 
-const modulesSlice = createSLice({
+
+
+const modulesSlice = createSlice({
     name: 'modules',
     initialState,
     reducers:{
+        deleteModule(state, action) {
+            console.log(action)
+            const moduleName = action.payload
+            const existingModuleIndex = state.modules.modules.findIndex(module => module.moduleCode === moduleName)
+            state.modules.module.splice(existingModuleIndex, 1)
+        }
 
     },
     extraReducers: {
-        [fetchModules.pending]: (state, action) => {
+        [fetchModule.pending]: (state, action) => {
             state.status = 'loading'
         },
-        [fetchModules.fulfilled]: (state, action) => {
+        [fetchModule.fulfilled]: (state, action) => {
             state.status = 'succeeded'
             state.modules = state.modules.concat(action.payload)
         },
-        [fetchModules.rejected]: (state, action) => {
+        [fetchModule.rejected]: (state, action) => {
             state.status = 'failed'
             state.error = action.error.message
         }
@@ -36,7 +46,7 @@ const modulesSlice = createSLice({
 
 
 
-export const { fetchModules } = modulesSlice.actions
+export const { deleteModule } = modulesSlice.actions 
 
 export default modulesSlice.reducer
 
