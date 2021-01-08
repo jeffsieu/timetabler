@@ -198,7 +198,7 @@ function App() {
           onTextChange={onTextChange}
           modules={modules}
         />
-        <form onSubmit={submitModule}>
+        {/* <form onSubmit={submitModule}>
           <TextField onChange={onTextChange} inputProps={{ style: { textTransform: 'uppercase' } }}>
 
           </TextField>
@@ -212,6 +212,7 @@ function App() {
           ) 
         }
         {/* <ModulesView
+        <ModulesView
             data = {modules}
             semester = {1}
           /> */}
