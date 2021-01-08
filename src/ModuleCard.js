@@ -2,7 +2,7 @@ import React from 'react'
 import { Card, Grid, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
-const useStyles = makeStyles( (theme) => ({
+const useStyles = makeStyles((theme) => ({
     cardstyle: {
         padding: "2px",
         paddingLeft: "5px"
@@ -17,11 +17,11 @@ const useStyles = makeStyles( (theme) => ({
 }))
 
 
-function ModuleCard (props) {
+function ModuleCard(props) {
     const classes = useStyles();
 
     const lessonType = (lesson, className) => {
-        switch(lesson) {
+        switch (lesson) {
             case ("tutorial"):
                 return `TUT[${className}]`
             case ("lecture"):
@@ -42,15 +42,15 @@ function ModuleCard (props) {
             return `Weeks ${start}-${end}`
         } else {
             let output = "Week "
-            for (let x = 0; x < weekArray.length; x ++ ){
+            for (let x = 0; x < weekArray.length; x++) {
                 output += weekArray[x] + " "
             }
             return output;
         }
     }
 
-    
-    
+
+
     return (
         <Card className = {classes.cardstyle}  style = {{backgroundColor: `${props.colorPalette[props.color]}`, color: "black"}}>
             <Grid container direction = "column" alignItems ="flex-start" justify = "flex-start">
