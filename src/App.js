@@ -43,7 +43,7 @@ const useStyles = makeStyles({
 function App() {
   const classes = useStyles();
   
-  const weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];  
+  const weeks = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];  
   const startTime = '0800';
   const endTime = '1800';
 
@@ -92,7 +92,7 @@ function App() {
         <Card>
           {[''].concat(weeks).map((day, index) =>
             <Box display="flex" className={classes.row}>
-              <Day label={day.toUpperCase()} ind={index} />
+              <Day label={day} ind={index} />
 
               {
                 slots.map(slot =>
