@@ -8,6 +8,7 @@ import { generateLessonPlan, dayToIndex } from './timetable'
 import ModuleCard from './ModuleCard'
 import ModulesView from './ModulesView'
 import { Rnd } from 'react-rnd';
+import { border } from '@material-ui/system'
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -21,9 +22,13 @@ const useStyles = makeStyles((theme) => ({
   },
   daySlot: {
     minWidth: '56px',
+    paddingTop: '14px',
+    borderTop: '1px solid',
+    borderColor: theme.palette.divider,
   },
   time: {
-    paddingTop: '48px',
+    paddingTop: '16px',
+    paddingBottom: '16px',
   },
   row: {
     borderTop: '1px solid',
@@ -92,7 +97,7 @@ function App() {
 
   const [inputValue, setInputValue] = useState('');
   const [selectValue, setSelectValue] = useState('');
-  
+
   const submitModule = (input) => {
     dispatch(fetchModule(input));
     setInputValue('');
@@ -107,7 +112,7 @@ function App() {
   const timetableStartTime = '0800';
 
   const timeSlotModules = [];
-  
+
   for (let lesson of lessonPlan) {
     const day = dayToIndex(lesson.day);
     if (timeSlotModules[day] === undefined) {
@@ -117,13 +122,13 @@ function App() {
     if (timeSlotModules[day][lesson.startTime] === undefined) {
       timeSlotModules[day][lesson.startTime] = [];
     }
-    timeSlotModules[day][lesson.startTime].push(lesson); 
+    timeSlotModules[day][lesson.startTime].push(lesson);
   }
 
 
   const lessonSlots = modules.map(module => module.semesterData.map(data => data.timetable));
 
-  const lessonSlotsByDay = [[],[],[],[],[],[],[]];
+  const lessonSlotsByDay = [[], [], [], [], [], [], []];
   for (var lessonSlot of lessonPlan) {
     const dayIndex = dayToIndex(lessonSlot.day);
     if (lessonSlotsByDay[dayIndex] === undefined)
@@ -132,12 +137,12 @@ function App() {
   }
   lessonSlotsByDay.forEach(slots => slots.sort((slot1, slot2) => slot1.startTime - slot2.startTime));
 
-  const slotToString = function(classSlot) {
+  const slotToString = function (classSlot) {
     return classSlot.moduleCode + 'Class' + classSlot.classNo;
   }
 
   // color palette
-  const colorPalette = ['#fa7a7a', '#fabc7a', '#d6fa7a', '#94e87d', '#7de8aa', '#7ddae8', '#7da1e8', '#bf7de8','#e87dc3']
+  const colorPalette = ['#fa7a7a', '#fabc7a', '#d6fa7a', '#94e87d', '#7de8aa', '#7ddae8', '#7da1e8', '#bf7de8', '#e87dc3']
 
   const componentRef = useRef();
   const { width, height } = useContainerDimensions(componentRef)
@@ -152,46 +157,47 @@ function App() {
     <div className="App">
       <Container>
         <TitleBar />
-        {width/timeSlotCount}
-          <Box>
-            <Rnd
-              default={{
-                x: offsetLeft + 56,
-                y: offsetTop,
-                width: slotWidth, 
-              }}
-              minWidth={slotWidth}
-              dragAxis="x"
-  
-              enableResizing={{
-                bottom: false,
-                bottomLeft: false,
-                bottomRight: false,
-                left: true,
-                right: true,
-                top: false,
-                topLeft: false,
-                topRight: false,
-    
-              }}
-              dragGrid={[slotWidth, 0]}
-              resizeGrid={[slotWidth, 0]}
-              bounds='window'
-            >
+        {width / timeSlotCount}
+        <Box>
+          <Rnd
+            default={{
+              x: offsetLeft + 56,
+              y: offsetTop,
+              width: slotWidth,
+            }}
+            minWidth={slotWidth}
+            dragAxis="x"
+
+            enableResizing={{
+              bottom: false,
+              bottomLeft: false,
+              bottomRight: false,
+              left: true,
+              right: true,
+              top: false,
+              topLeft: false,
+              topRight: false,
+
+            }}
+            dragGrid={[slotWidth, 0]}
+            resizeGrid={[slotWidth, 0]}
+            bounds='window'
+          >
             <div style={{ margin: 0, height: '48px' }}>
               <Card height='40px'>
                 bruh
               </Card>
             </div>
-            </Rnd>
-          </Box>
-        <Card className={classes.timetable}>       
+          </Rnd>
+        </Box>
+        <Card className={classes.timetable}>
           <Box display="flex">
             <Box className={classes.daySlot}>
             </Box>
             {
               slots.map(slot =>
-                <Box flex='1' className={`${classes.slot} ${classes.time}`}>
+                <Box flex='1' textAlign="center" fontWeight='bold'
+                  className={`${classes.slot} ${classes.time}`}>
                   {slot.start}
                 </Box>
               )
@@ -199,25 +205,25 @@ function App() {
           </Box>
           {days.map((day, dayIndex) =>
             <Box display="flex">
-              <Box className={classes.daySlot}>
+              <Box textAlign="center" fontWeight='bold' className={classes.daySlot}>
                 {day}
               </Box>
-              <Box ref={dayIndex === 0 ? componentRef : null} display="flex" flex={1} className={classes.row} style={{backgroundSize: `${200/numberOfSlots}% ${200/numberOfSlots}%`}}>
+              <Box ref={dayIndex === 0 ? componentRef : null} display="flex" flex={1} className={classes.row} style={{ backgroundSize: `${200 / numberOfSlots}% ${200 / numberOfSlots}%` }}>
                 {
                   lessonSlotsByDay[dayIndex]?.map((slot, slotIndex) => {
-                    const leftSlotsEmpty = ((+slot.startTime)-(slotIndex === 0 ? timetableStartTime: +lessonSlotsByDay[dayIndex][slotIndex-1].endTime)) / 100;
-                    const marginLeft = leftSlotsEmpty*100/numberOfSlots;
-                    return <div style={{width: `${100/numberOfSlots * ((+slot.endTime)-(+slot.startTime)) / 100}%`, marginLeft: marginLeft +'%'}}>
-                      {}
+                    const leftSlotsEmpty = ((+slot.startTime) - (slotIndex === 0 ? timetableStartTime : +lessonSlotsByDay[dayIndex][slotIndex - 1].endTime)) / 100;
+                    const marginLeft = leftSlotsEmpty * 100 / numberOfSlots;
+                    return <div style={{ width: `${100 / numberOfSlots * ((+slot.endTime) - (+slot.startTime)) / 100}%`, marginLeft: marginLeft + '%' }}>
+                      { }
                       <ModuleCard
                         {...slot}
-                        colorPalette = {colorPalette}/>
-                        
+                        colorPalette={colorPalette} />
+
                     </div>
                   }
-                    
+
                     // {
-                      
+
                     // }
                     // timeSlotModules[day] ? timeSlotModules[day][slot.start]?.map(classSlot => {
                     //   return <Box display="block">
@@ -246,14 +252,14 @@ function App() {
         <AddMods
           listOfMods={listOfMods}
           modules={modules}
-          
+
         />
-               
+
         <ModulesView
-            data = {modules}
-            semester = {1} // 0 for sem 1 1 for sem 2
-            colorPalette = {colorPalette}
-          />
+          data={modules}
+          semester={1} // 0 for sem 1 1 for sem 2
+          colorPalette={colorPalette}
+        />
       </Container>
     </div>
   );
