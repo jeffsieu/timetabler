@@ -18,6 +18,9 @@ const useStyles = makeStyles((theme) => ({
   timetable: {
     borderColor: theme.palette.divider,
   },
+  daySlot: {
+    minWidth: '56px',
+  },
   time: {
     paddingTop: '48px',
   },
@@ -27,9 +30,6 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '48px',
     background: `linear-gradient(90deg,${theme.palette.background.default} 50%,${theme.palette.background.paper} 0)`,
     // backgroundSize: '13% 13%',
-  },
-  dayOfWeek: {
-    width: 100,
   },
   slot:
   {
@@ -109,13 +109,10 @@ function App() {
   return (
     <div className="App">
       <Container>
-        {/* <Typography className={classes.appBar} variant="h4" >
-          <img src={logo} className={classes.img} />
-        </Typography> */}
-        <Card className={classes.timetable}>
-        {/* <TitleBar /> */}
+        <TitleBar />
+        <Card className={classes.timetable}>       
           <Box display="flex">
-            <Box width={100}>
+            <Box className={classes.daySlot}>
             </Box>
             {
               slots.map(slot =>
@@ -127,7 +124,7 @@ function App() {
           </Box>
           {days.map((day, dayIndex) =>
             <Box display="flex">
-              <Box className={classes.dayOfWeek}>
+              <Box className={classes.daySlot}>
                 {day}
               </Box>
               <Box display="flex" flex={1} className={classes.row} style={{backgroundSize: `${200/numberOfSlots}% ${200/numberOfSlots}%`}}>
