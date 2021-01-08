@@ -1,15 +1,22 @@
-import axios from 'axios'
-import { createStore } from 'redux'
-import { createSlice } from '@reduxjs/toolkit'
-import { Box, Card, CardActions, Container, FormControl, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Box, Card, Container, FormControl, makeStyles, TextField, Typography } from '@material-ui/core'
+import ScheduleIcon from '@material-ui/icons/Schedule';
 import React, { useState } from 'react'
-import { fetchModule, deleteModule, re} from './redux/modulesSlice'
+import { fetchModule, deleteModule, re } from './redux/modulesSlice'
 import selectAllModules from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import AddMods from './AddMods'
+import { border, borderRadius } from '@material-ui/system'
+import logo from './title.png'
 import ModuleCard from './ModuleCard'
+import ModulesView from './ModulesView'
 
 const useStyles = makeStyles({
+  title: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    margin: '0.75em 0.5em'
+  },
   row: {
     // background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
     // border: 0,
@@ -28,6 +35,16 @@ const useStyles = makeStyles({
   {
     borderLeft: '1px solid',
     borderColor: 'black',
+  },
+  appBar: {
+    backgroundColor: '#ececec',
+    borderRadius: '8px'
+  },
+  img: {
+    padding: '8px',
+    marginTop: '5px',
+    width: '30%',
+    height: 'auto',
   }
 });
 
@@ -82,8 +99,8 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <Typography variant="h4">
-          timetabler
+        <Typography className={classes.appBar} variant="h4" >
+          <img src={logo} className={classes.img} />
         </Typography>
         <Card>
           <Box display="flex" className={classes.row}>
@@ -114,14 +131,19 @@ function App() {
             </Box>
           )}
         </Card>
-        <AddMods 
+        <AddMods
           listOfMods={listOfMods}
-          onTextChange = {onTextChange}
+          onTextChange={onTextChange}
         />
-        
+        <form onSubmit={submitModule}>
+          <TextField onChange={onTextChange} inputProps={{ style: { textTransform: 'uppercase' } }}>
+
+          </TextField>
+        </form>
+        {modules.length}
         {
-          modules.map(module => 
-            <Box key = {module.moduleCode}>
+          modules.map(module =>
+            <Box>
               {module.moduleCode}
             </Box>
           )
@@ -133,6 +155,10 @@ function App() {
             venue = "RM1-SR??"
             weeks = {[1,2,3,4,5,6,7,8,9,10]}
         />
+        <ModulesView
+            data = {modules}
+            semester = {1}
+          />
       </Container>
     </div>
   );

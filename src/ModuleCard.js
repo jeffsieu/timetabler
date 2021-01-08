@@ -1,8 +1,16 @@
 import React from 'react'
 import { Card, Grid, Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles( (theme) => ({
+    cardstyle: {
+        padding: "10px"
+    }
+}))
 
 
 function ModuleCard (props) {
+    const classes = useStyles();
 
     const lessonType = (lesson, className) => {
         switch(lesson) {
@@ -34,7 +42,7 @@ function ModuleCard (props) {
     }
     
     return (
-        <Card style = {{maxWidth: "100px"}}>
+        <Card style = {{maxWidth: "100px"}} className = {classes.cardstyle}>
             <Grid container direction = "column" alignItems ="flex-start">
                 <Grid item>
                     <Typography variant = "subtitle2">{props.moduleCode}</Typography>
