@@ -1,12 +1,13 @@
 import axios from 'axios'
 import { createStore } from 'redux'
 import { createSlice } from '@reduxjs/toolkit'
-import { Box, Card, Container, FormControl, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Box, Card, CardActions, Container, FormControl, makeStyles, TextField, Typography } from '@material-ui/core'
 import React, { useState } from 'react'
 import { fetchModule, deleteModule, re} from './redux/modulesSlice'
 import selectAllModules from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import AddMods from './AddMods'
+import ModuleCard from './ModuleCard'
 
 const useStyles = makeStyles({
   row: {
@@ -64,7 +65,7 @@ function App() {
 
   // Get all mods
   const listOfMods = useSelector(state => state.allModules.allModules);
-
+  console.log(modules);
   if (status === 'succeeded' && typeof test !== 'undefined') {
     console.log(test);
     // modules = test.map(item => {
@@ -117,19 +118,21 @@ function App() {
           listOfMods={listOfMods}
           onTextChange = {onTextChange}
         />
-        <form onSubmit={submitModule}>
-          <TextField onChange={onTextChange} inputProps={{style: {textTransform: 'uppercase'}}}>
-
-          </TextField>
-        </form>
-        {modules.length}
+        
         {
           modules.map(module => 
-            <Box>
+            <Box key = {module.moduleCode}>
               {module.moduleCode}
             </Box>
           )
         }
+        <ModuleCard 
+            moduleCode = "CS1101S"
+            lesson = "Recitation"
+            className = "E09"
+            venue = "RM1-SR??"
+            weeks = {[1,2,3,4,5,6,7,8,9,10]}
+        />
       </Container>
     </div>
   );
