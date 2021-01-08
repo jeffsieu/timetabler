@@ -123,7 +123,7 @@ function App() {
           listOfMods={listOfMods}
           onTextChange={onTextChange}
         />
-        <form onSubmit={submitModule}>
+        {/* <form onSubmit={submitModule}>
           <TextField onChange={onTextChange} inputProps={{ style: { textTransform: 'uppercase' } }}>
 
           </TextField>
@@ -142,7 +142,7 @@ function App() {
             className = "E09"
             venue = "RM1-SR??"
             weeks = {[1,2,3,4,5,6,7,8,9,10]}
-        />
+        /> */}
         <ModulesView
             data = {modules}
             semester = {1}
