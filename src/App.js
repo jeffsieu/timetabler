@@ -4,8 +4,7 @@ import { fetchModule } from './redux/modulesSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import TitleBar from './TitleBar.js'
 import AddMods from './AddMods'
-import { border, borderRadius } from '@material-ui/system'
-import logo from './title.png'
+import Day from './Day'
 import ModuleCard from './ModuleCard'
 import ModulesView from './ModulesView'
 
@@ -91,23 +90,9 @@ function App() {
       <Container>
         <TitleBar />
         <Card>
-          <Box display="flex" className={classes.row}>
-            <Box width={100}>
-            </Box>
-
-            {
-              slots.map(slot =>
-                <Box flex='1' className={classes.slot} borderColor="black">
-                  {slot.start}
-                </Box>
-              )
-            }
-          </Box>
-          {weeks.map(week =>
+          {[''].concat(weeks).map((day, index) =>
             <Box display="flex" className={classes.row}>
-              <Box className={classes.dayOfWeek}>
-                {week}
-              </Box>
+              <Day label={day.toUpperCase()} ind={index} />
 
               {
                 slots.map(slot =>
