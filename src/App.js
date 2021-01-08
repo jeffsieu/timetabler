@@ -32,7 +32,6 @@ const useStyles = makeStyles({
 
 function App() {
 
-
   const weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const classes = useStyles();
 
@@ -61,7 +60,10 @@ function App() {
     dispatch(fetchModule(input))
   }
 
-  console.log(modules);
+  // console.log(modules);
+
+  // Get all mods
+  const listOfMods = useSelector(state => state.allModules.allModules);
 
   if (status === 'succeeded' && typeof test !== 'undefined') {
     console.log(test);
@@ -75,7 +77,6 @@ function App() {
     //   // )
     // })
   }
-
 
   return (
     <div className="App">
@@ -112,7 +113,10 @@ function App() {
             </Box>
           )}
         </Card>
-        <AddMods />
+        <AddMods 
+          listOfMods={listOfMods}
+          onTextChange = {onTextChange}
+        />
         <form onSubmit={submitModule}>
           <TextField onChange={onTextChange} inputProps={{style: {textTransform: 'uppercase'}}}>
 

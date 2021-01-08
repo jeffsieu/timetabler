@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -14,24 +14,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AddMods() {
+export default function AddMods(props) {
   const classes = useStyles();
-  
+  const [inputValue, setInputValue] = useState('');
+  const [selectValue, setSelectValue] = useState('');
   return (
     <div className={classes.width}>
-      <Autocomplete
+      {/* <Autocomplete
+        value = {inputValue}
         className={classes.search}
-        id="combo-box-demo"
-        options={ listOfMods }
-        getOptionLabel={(option) => option.code}
+        id="modsearch"
+        options={props.listOfMods}
+        getOptionLabel={(option) => option.moduleCode}
         style={{ width: 300 }}
-        renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
+        renderInput={(params) => <TextField {...params} label="Select modules.." variant="outlined" />}
+        inputValue={inputValue}
+        onInputChange={(event, newInputValue) => {
+          setInputValue(newInputValue);
+        }}
+      /> */}
+
+      <Autocomplete
+        value={selectValue}
+        onChange={(event, newValue) => {
+          setSelectValue(newValue);
+        }}
+        inputValue={inputValue}
+        onInputChange={(event, newInputValue) => {
+          setInputValue(newInputValue);
+        }}
+        id="mod-search"
+        options={props.listOfMods}
+        getOptionLabel={(option) => option.moduleCode}
+        style={{ width: 300 }}
+        renderInput={(params) => <TextField {...params} label="Controllable" variant="outlined" />}
       />
     </div>    
   );
 }
-
-const listOfMods = [
-  { code: "MA1521" },
-  { code: "MA1101R" },
-]
