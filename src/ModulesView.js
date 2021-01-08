@@ -24,7 +24,7 @@ function ModulesView(props) {
         const date = (data) => {
             if(data.semesterData === undefined) {
                 return "Not offered in this Semester"
-            } else if (data.semesterData[props.semester] === undefined){
+            } else if (data.semesterData[props.semester] === undefined || data.semesterData[props.semester].examDate === undefined){
                 return "No Exam"
             } else {
                 return format(new Date(data.semesterData[props.semester].examDate), "dd-MM-yyyy")
