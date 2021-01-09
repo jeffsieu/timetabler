@@ -1,4 +1,5 @@
 
+
 /**Returns an object such that we can get a module by doing
  * obj[semester][key], where key is a combination of module and lesson type
  * Given a list of modules, returns them grouped by semester then lesson type and module.
@@ -7,7 +8,6 @@
  */
 function makeClasses(modules, semester) {
   const classes = {};
-
   for (let module of modules) {
     const semesterObject = module.semesterData.find(data => data.semester == semester);
     if (!semesterObject) {
@@ -35,18 +35,28 @@ function makeClasses(modules, semester) {
 
 function putOneSlotLessons(timetable, lessons) {
   lessons = JSON.parse(JSON.stringify(lessons));
+  const confirmedLessons = [];
   for (let [key, classNos] of Object.entries(lessons)) {
-    if (classNos.length === 1) {
-      const slots = classNos[0];
+    console.log(Object.values(classNos).length);
+    if (Object.values(classNos).length === 1) {
+      const slots = classNos[Object.keys(classNos)[0]];
+      slots.forEach(slot => { slot.fixed = true });
+      console.log(slots);
       if (hasClash(timetable, slots)) {
         return [null, null];
       } else {
-        timetable = addToTimetable(timetable, slots);
+        console.log(slots)
+        for (let slot of slots) {
+          timetable = addToTimetable(timetable, slot);
+          console.log(slot)
+          confirmedLessons.push(slot);
+          console.log(timetable);
+        }
         delete lessons[key];
       }
     }
   }
-  return [timetable, lessons];
+  return [timetable, confirmedLessons, lessons];
 }
 
 function getTimetableIndices(start, end) {
@@ -58,7 +68,7 @@ function hasClash(timetable, lessons) {
   return lessons.some((lesson) => {
     const lessonStart = lesson.startTime;
     const lessonEnd = lesson.endTime;
-    const day = dayToIndex(lesson.day);
+    const day = lesson.dayIndex ?? dayToIndex(lesson.day);
 
     return getTimetableIndices(lessonStart, lessonEnd).some((i) => timetable[day][i]);
   });
@@ -108,7 +118,7 @@ function addToTimetable(timetable, lesson) {
 
 function generatePermutation(oldTimetable, lessons) {
   // Fix those slots that can be fixed
-  const [timetable, unconfirmedLessons] = putOneSlotLessons(oldTimetable, lessons);
+  const [timetable, confirmedLessons, unconfirmedLessons] = putOneSlotLessons(oldTimetable, lessons);
 
   if (timetable === null) {
     return [];
@@ -142,7 +152,7 @@ function generatePermutation(oldTimetable, lessons) {
   }
 
 
-  return helper(timetable, [], unconfirmedLessons);
+  return helper(timetable, confirmedLessons, unconfirmedLessons);
 }
 
 function generateLessonPlan(modules, customModules, semester) {

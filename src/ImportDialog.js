@@ -52,8 +52,9 @@ export default function FormDialog(props) {
 
   return (
     <div className={classes.root}>
-      <Fab color="primary" onClick={handleClickOpen}>
+      <Fab color="primary" variant="extended" onClick={handleClickOpen}>
         <AddIcon />
+        Import from NUSMods
       </Fab>
       <Dialog open={open} onClose={handleClose} className={classes.dialog}>
         <DialogTitle id="title">Import</DialogTitle>

@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Container, makeStyles, TextField, FormControl, InputLabel, MenuItem, Select, Grid } from '@material-ui/core'
+import { Box, Card, CardContent, Container, makeStyles, TextField, IconButton, FormControl, InputLabel, MenuItem, Select, Grid } from '@material-ui/core'
 import React, { useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { fetchModule } from './redux/modulesSlice'
@@ -11,8 +11,6 @@ import ImportDialog from './ImportDialog'
 import { generateLessonPlan, dayToIndex } from './timetable'
 import ModuleCard from './ModuleCard'
 import ModulesView from './ModulesView'
-import { Rnd } from 'react-rnd';
-import { border } from '@material-ui/system'
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -100,17 +98,7 @@ const backgroundStyle = {
 function App() {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const classes = useStyles();
-  const startTime = '0800';
-  const endTime = '1800';
   const [semester, setSemester] = useState('1')
-  const timeSlotCount = ((+endTime) - (+startTime)) / 100;
-  const slots = Array.from({ length: timeSlotCount }, (v, i) => {
-    return {
-      start: ((+startTime) + 100 * i).toString().padStart(4, '0'),
-      end: ((+startTime) + 100 * (i + 1)).toString().padStart(4, '0')
-    }
-  }
-  );
 
   const dispatch = useDispatch()
 
@@ -120,12 +108,6 @@ function App() {
   const [inputValue, setInputValue] = useState('');
   const [selectValue, setSelectValue] = useState('');
   const [messages, setMessages] = useState('');
-  
-  const submitModule = (input) => {
-    dispatch(fetchModule(input));
-    setInputValue('');
-    setSelectValue('');
-  }
 
   // Get all mods
   const listOfMods = useSelector(state => state.allModules.allModules);
@@ -147,11 +129,23 @@ function App() {
     timeSlotModules[day][lesson.startTime].push(lesson);
   }
 
-  const lessonSlots = modules.map(module => module.semesterData.map(data => data.timetable));
-
   const lessonSlotsByDay = [[], [], [], [], [], [], []];
-  for (var lessonSlot of lessonPlan) {
-    const dayIndex = dayToIndex(lessonSlot.day);
+
+  const lessonPlanWithEmptyModules = lessonPlan.map(x => x);
+  lessonPlanWithEmptyModules.push(...customModules);
+  
+  const startTime = lessonPlanWithEmptyModules.reduce((acc, module) => slotToTime(Math.min(timeToSlot(module.startTime), timeToSlot(acc))), '0800');
+  const endTime = '1800';
+  const timeSlotCount = ((+endTime) - (+startTime)) / 100;
+  const slots = Array.from({ length: timeSlotCount }, (v, i) => {
+    return {
+      start: ((+startTime) + 100 * i).toString().padStart(4, '0'),
+      end: ((+startTime) + 100 * (i + 1)).toString().padStart(4, '0')
+    }
+  }
+  );
+  for (var lessonSlot of lessonPlanWithEmptyModules) {
+    const dayIndex = lessonSlot.dayIndex ?? dayToIndex(lessonSlot.day);
     if (lessonSlotsByDay[dayIndex] === undefined)
       lessonSlotsByDay[dayIndex] = []
     lessonSlotsByDay[dayIndex].push(lessonSlot);
@@ -166,41 +160,34 @@ function App() {
     setMessages('');
   }
 
-  // color palette
-  const colorPalette = ['#fa7a7a', '#fabc7a', '#d6fa7a', '#94e87d', '#7de8aa', '#7ddae8', '#7da1e8', '#bf7de8', '#e87dc3']
-
   const componentRef = useRef();
   const { width, height } = useContainerDimensions(componentRef)
 
-  function getOffsetLeft(component) {
-    return component.offsetLeft + (component.offsetParent ? getOffsetLeft(component.offsetParent) : 0);
-  }
-
-  function getOffsetTop(component) {
-    return component.offsetTop + (component.offsetParent ? getOffsetTop(component.offsetParent) : 0);
-  }
   const offsetLeft = componentRef.current?.getBoundingClientRect()?.x ?? 0;
   const offsetTop = componentRef.current?.getBoundingClientRect()?.height  ?? 0;
 
   const slotWidth = width / timeSlotCount;
   const slotHeight = height;
 
-  console.log(offsetLeft);
-  console.log(offsetTop);
-
-  console.log(componentRef.current?.offsetTop);
-  console.log(componentRef.current?.getBoundingClientRect())
-
   function onRowClick(dayIndex) {
     return function (event) {
-      console.log(dayIndex);
       const x = event.clientX;
       const slot = Math.floor((x - offsetLeft) / slotWidth);
-      dispatch(addCustomModule({
-        startTime: slotToTime(slot),
-        endTime: slotToTime(slot + 1),
-        dayIndex: dayIndex,
-      }));
+      const startTime = slotToTime(slot);;
+
+      let existingModule = customModules.find(customModule => customModule.dayIndex === dayIndex && customModule.startTime === startTime);
+
+      if (existingModule) {
+        dispatch(deleteCustomModule(existingModule));
+        console.log(customModules);
+      } else {
+        dispatch(addCustomModule({
+          startTime: startTime,
+          endTime: slotToTime(slot + 1),
+          dayIndex: dayIndex,
+          color: '#FFFFFF'
+        }));
+      }
     }
   }
 
@@ -212,64 +199,29 @@ function App() {
     return (+time - (+timetableStartTime)) / 100;
   }
 
-  function onCustomModuleDragStop(customModule) {
-    return function (event, data) {
-      console.log((data.x));
-      const transformX = data.node.style.transform.split('(')[1].split(',')[0];
-      const transformY = data.node.style.transform.split('(')[1].split(',')[1];
-      const dayIndex = Math.floor(transformY.substring(0, transformX.length - 2) / slotHeight);
-      const slot = Math.floor(transformX.substring(0, transformX.length - 2) / slotWidth);
-      if (slot !== timeToSlot(customModule.startTime) || dayIndex !== customModule.dayIndex) {
-        dispatch(updateCustomModules({
-          id: customModule.id,
-          startTime: customModule.startTime,
-          endTime: customModule.endTime,
-          dayIndex: customModule.dayIndex,
-        }));
-      }
-      return true;
-    };
-  }
-
-  function onCustomModuleResizeStop(customModule) {
-    return function (e, dir, refToElement, delta, position) {
-      const slotsExpanded = Math.round(delta.width / slotWidth);
-      if (slotsExpanded !== 0) {
-        dispatch(updateCustomModules({
-          id: customModule.id,
-          startTime: customModule.startTime,
-          dayIndex: customModule.dayIndex,
-          endTime: slotToTime(timeToSlot(customModule.endTime) + slotsExpanded),
-
-        }));
-      }
-      return true;
-    };
-  }
-
-    return (
+  return (
     <div className="App">
       <Container>
         <Alerts messages={messages} clearErrorMessage = {clearErrorMessage}/>
         <TitleBar />
-        <Grid container justify="flex-end">
-          <FormControl className={classes.formControl} >
-            <InputLabel>Semester</InputLabel>
-            <Select
-              value={semester}
-              onChange={e => setSemester(e.target.value)}
-              label="Semester"
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={1}>1</MenuItem>
-              <MenuItem value={2}>2</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
+          <Grid container justify="center">
+            <FormControl className={classes.formControl} >
+              <InputLabel>Semester</InputLabel>
+              <Select
+                value={semester}
+                onChange={e => setSemester(e.target.value)}
+                label="Semester"
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={2}>2</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
         <Box>
-          {customModules.map(customModule =>
+          {/* {customModules.map(customModule =>
             <Rnd
               onDragStop={onCustomModuleDragStop(customModule)}
               onResizeStop={onCustomModuleResizeStop(customModule)}
@@ -303,10 +255,13 @@ function App() {
               <div style={{ margin: 0, height: '48px' }}>
                 <Card style={{ minHeight: '48px' }}>
                   Free slot
+                  <IconButton color="primary" aria-label="upload picture" component="span" onClick={onRemoveCustomModuleClick(customModule)}>
+                    <Remove />
+                  </IconButton>
                   {customModule.dayIndex}
-              </Card>
+                </Card>
               </div>
-            </Rnd>)}
+            </Rnd>)} */}
         </Box>
         <Card className={classes.timetable}>
           <Box display="flex">
@@ -333,8 +288,7 @@ function App() {
                     return <div style={{ width: `${100 / numberOfSlots * ((+slot.endTime) - (+slot.startTime)) / 100}%`, marginLeft: marginLeft + '%' }}>
                       { }
                       <ModuleCard
-                        {...slot}
-                        colorPalette={colorPalette} />
+                        {...slot} />
 
                     </div>
                   }
@@ -346,18 +300,13 @@ function App() {
         </Card>
         <AddMods
           listOfMods={listOfMods}
-          modules={modules}
+          modules={modules}/>
 
-        />
+        <ImportDialog />
         <ModulesView
           data={modules}
           semester={semester} // 0 for sem 1 1 for sem 2
-          colorPalette={colorPalette}
-          deleteAllCustomModules = {deleteAllCustomModules}
         />
-        <ImportDialog />
-        {offsetLeft}
-        {offsetTop}
       </Container>
     </div>
   );

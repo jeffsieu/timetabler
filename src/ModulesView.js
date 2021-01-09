@@ -43,7 +43,7 @@ function ModulesView(props) {
             <Grid item key = {item.moduleCode} xs={4} style = {{padding: "10px"}}>
                 <Grid container direction = "row" alignItems = "flex-start" justify = "space-between">
                     <Grid item>
-                        <FiberManualRecordIcon style = {{color: `${props.colorPalette[item.color]}`}}/>
+                        <FiberManualRecordIcon style = {{color: `${item.color}`}}/>
                     </Grid>
                     <Grid item xs = {10} >
                         <Grid container direction = "column" alignItems = "flex-start">

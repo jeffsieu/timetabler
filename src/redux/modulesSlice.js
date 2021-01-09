@@ -13,7 +13,8 @@ export const fetchModule = createAsyncThunk('modules/fetchModule', async (module
     return result.data
 })
 
-
+// color palette
+const colorPalette = ['#fa7a7a', '#fabc7a', '#d6fa7a', '#94e87d', '#7de8aa', '#7ddae8', '#7da1e8', '#bf7de8', '#e87dc3']
 
 const modulesSlice = createSlice({
     name: 'modules',
@@ -34,7 +35,7 @@ const modulesSlice = createSlice({
             state.status = 'succeeded'
             if (!state.modules.some(module => module.moduleCode === action.payload.moduleCode)){
                 const toAdd = action.payload
-                toAdd["color"] = state.modules.length
+                toAdd["color"] = colorPalette[state.modules.length]
                 state.modules = state.modules.concat(toAdd)
             }
         }, 
