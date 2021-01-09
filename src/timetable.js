@@ -27,6 +27,7 @@ function makeSemesterClasses(modules) {
         const extendedLessonObject = JSON.parse(JSON.stringify(lesson))
         extendedLessonObject['moduleCode'] = module.moduleCode;
         semesterClasses[semester][key][classNo].push(extendedLessonObject);
+        extendedLessonObject['color'] = module.color;
       }
     }
   }
