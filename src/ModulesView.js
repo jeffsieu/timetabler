@@ -5,6 +5,7 @@ import { format} from 'date-fns'
 import { deleteModule, deleteAllModules } from './redux/modulesSlice'
 import { useDispatch } from 'react-redux'
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord'
+import { deleteAllCustomModules } from './redux/customModules'
 
 
 
@@ -19,6 +20,7 @@ function ModulesView(props) {
     }
 
     const onDeleteAllModules = () => {
+        dispatch(props.deleteAllCustomModules())
         dispatch(deleteAllModules())
     }
     

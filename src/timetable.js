@@ -3,39 +3,37 @@
  * obj[semester][key], where key is a combination of module and lesson type
  * Given a list of modules, returns them grouped by semester then lesson type and module.
  * @param {Module[]} modules 
+ * @param {number} semester
  */
-function makeSemesterClasses(modules) {
-  const semesterClasses = [];
+function makeClasses(modules, semester) {
+  const classes = {};
 
   for (let module of modules) {
-    for (let semesterObject of module.semesterData) {
-      let semester = semesterObject.semester;
-      if (semesterClasses[semester] === undefined) {
-        semesterClasses[semester] = {};
+    const semesterObject = module.semesterData.find(data => data.semester == semester);
+    if (!semesterObject) {
+      continue;
+    }
+    for (let lesson of semesterObject.timetable) {
+      const lessonType = lesson.lessonType;
+      const key = module.moduleCode + lessonType;
+      const classNo = lesson.classNo;
+      if (classes[key] === undefined) {
+        classes[key] = {};
       }
-      for (let lesson of semesterObject.timetable) {
-        const lessonType = lesson.lessonType;
-        const key = module.moduleCode + lessonType;
-        const classNo = lesson.classNo;
-        if (semesterClasses[semester][key] === undefined) {
-          semesterClasses[semester][key] = {};
-        }
-        if (semesterClasses[semester][key][classNo] === undefined) {
-          semesterClasses[semester][key][classNo] = [];
-        }
+      if (classes[key][classNo] === undefined) {
+        classes[key][classNo] = [];
+      }
 
-        const extendedLessonObject = JSON.parse(JSON.stringify(lesson))
-        extendedLessonObject['moduleCode'] = module.moduleCode;
-        semesterClasses[semester][key][classNo].push(extendedLessonObject);
-        extendedLessonObject['color'] = module.color;
-      }
+      const extendedLessonObject = JSON.parse(JSON.stringify(lesson))
+      extendedLessonObject['moduleCode'] = module.moduleCode;
+      classes[key][classNo].push(extendedLessonObject);
+      extendedLessonObject['color'] = module.color;
     }
   }
-  return semesterClasses;
+  return classes;
 }
 
-function putOneSlotLessons(lessons) {
-  let timetable = makeEmptyTimetable();
+function putOneSlotLessons(timetable, lessons) {
   lessons = JSON.parse(JSON.stringify(lessons));
   for (let [key, classNos] of Object.entries(lessons)) {
     if (classNos.length === 1) {
@@ -53,7 +51,7 @@ function putOneSlotLessons(lessons) {
 
 function getTimetableIndices(start, end) {
   const slotCount = ((+end) - (+start)) / 100;
-  return Array.from({ length: slotCount }, (v, i) => i+start);
+  return Array.from({ length: slotCount }, (v, i) => i + (start / 100));
 }
 
 function hasClash(timetable, lessons) {
@@ -99,18 +97,18 @@ function addToTimetable(timetable, lesson) {
   const newTimetable = clone2d(timetable);
   const lessonStart = lesson.startTime;
   const lessonEnd = lesson.endTime;
-  const day = dayToIndex(lesson.day);
+  const dayIndex = lesson.dayIndex === undefined ? dayToIndex(lesson.day) : lesson.dayIndex;
 
   getTimetableIndices(lessonStart, lessonEnd).forEach(
-    (index) => { newTimetable[day][index] = true }
+    (index) => { newTimetable[dayIndex][index] = true }
   )
 
   return newTimetable;
 }
 
-function generatePermutation(lessons) {
+function generatePermutation(oldTimetable, lessons) {
   // Fix those slots that can be fixed
-  const [timetable, unconfirmedLessons] = putOneSlotLessons(lessons);
+  const [timetable, unconfirmedLessons] = putOneSlotLessons(oldTimetable, lessons);
 
   if (timetable === null) {
     return [];
@@ -147,16 +145,15 @@ function generatePermutation(lessons) {
   return helper(timetable, [], unconfirmedLessons);
 }
 
-function generateLessonPlan(modules, semester) {
-  const semesterClasses = makeSemesterClasses(modules);
-  let lessonPlan = [];
+function generateLessonPlan(modules, customModules, semester) {
+  let timetable = makeEmptyTimetable();
+  const classes = makeClasses(modules, semester);
 
-  console.log(semesterClasses);
-
-  if (semesterClasses[semester]) {
-    lessonPlan = generatePermutation(semesterClasses[semester]);
+  for (let customModule of customModules) {
+    timetable = addToTimetable(timetable, customModule);
   }
 
+  let lessonPlan = classes ? generatePermutation(timetable, classes) : [];
   return lessonPlan ?? [];
 }
 
