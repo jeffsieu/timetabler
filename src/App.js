@@ -119,7 +119,27 @@ function App() {
 
   const [inputValue, setInputValue] = useState('');
   const [selectValue, setSelectValue] = useState('');
-  const [messages, setMessages] = useState('');
+  const [message, setMessage] = useState({
+    error: false,
+    title: '',
+    body: '',
+  });
+
+  const pushMessage = (msgTitle, msgBody) => {
+    setMessage({
+      error: true,
+      title: msgTitle,
+      body: msgBody,
+    });
+  }
+
+  const clearMessage = () => {
+    setMessage({
+      error: false,
+      title: '',
+      body: '',
+    });
+  }
   
   const submitModule = (input) => {
     dispatch(fetchModule(input));
@@ -160,10 +180,6 @@ function App() {
 
   const slotToString = function (classSlot) {
     return classSlot.moduleCode + 'Class' + classSlot.classNo;
-  }
-
-  const clearErrorMessage = () => {
-    setMessages('');
   }
 
   // color palette
@@ -250,7 +266,7 @@ function App() {
     return (
     <div className="App">
       <Container>
-        <Alerts messages={messages} clearErrorMessage = {clearErrorMessage}/>
+        { message.error && <Alerts message={message} clearMessage={clearMessage} /> }
         <TitleBar />
         <Grid container justify="flex-end">
           <FormControl className={classes.formControl} >
@@ -355,7 +371,7 @@ function App() {
           colorPalette={colorPalette}
           deleteAllCustomModules = {deleteAllCustomModules}
         />
-        <ImportDialog />
+        <ImportDialog pushMsg={pushMessage}/>
         {offsetLeft}
         {offsetTop}
       </Container>
