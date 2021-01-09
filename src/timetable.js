@@ -65,6 +65,10 @@ function getTimetableIndices(start, end) {
 }
 
 function hasClash(timetable, lessons) {
+  if (lessons[0].moduleCode==='CS2030S' && lessons[0].lessonType === 'Recitation') {
+    console.log(lessons);
+    console.log(timetable);
+  }
   return lessons.some((lesson) => {
     const lessonStart = lesson.startTime;
     const lessonEnd = lesson.endTime;
@@ -107,7 +111,7 @@ function addToTimetable(timetable, lesson) {
   const newTimetable = clone2d(timetable);
   const lessonStart = lesson.startTime;
   const lessonEnd = lesson.endTime;
-  const dayIndex = lesson.dayIndex === undefined ? dayToIndex(lesson.day) : lesson.dayIndex;
+  const dayIndex = lesson.dayIndex ?? dayToIndex(lesson.day);
 
   getTimetableIndices(lessonStart, lessonEnd).forEach(
     (index) => { newTimetable[dayIndex][index] = true }
@@ -135,7 +139,12 @@ function generatePermutation(oldTimetable, lessons) {
       if (hasClash(timetable, classInstance)) {
         continue;
       }
-      const newTimetable = addToTimetable(timetable, classInstance);
+
+      let newTimetable;
+
+      for (let slot of classInstance) {
+        newTimetable = addToTimetable(timetable, classInstance);
+      }
       const newConfirmedLessons = [...confirmedLessons];
       const newUnconfirmedLessons = JSON.parse(JSON.stringify(unconfirmedLessons));
 

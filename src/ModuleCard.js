@@ -59,12 +59,13 @@ function ModuleCard(props) {
         {
           props.dayIndex !== undefined ? 
           <Typography className={classes.title} variant="subtitle1">Free Time</Typography> :
-            <div>
+            <Grid container direction="column" alignItems="flex-start" justify="flex-start">
               <Typography className={classes.title} variant="subtitle1">{props.moduleCode}</Typography>
+
               <Typography className={classes.subtitle} variant="caption">{lessonType(props.lessonType.toLowerCase(), props.classNo)}</Typography>
               <Typography className={classes.subtitle} variant="caption">{props.venue}</Typography>
               <Typography className={classes.subtitle} variant="caption">{weeks(props.weeks)}</Typography>
-            </div>
+            </Grid>
 
         }
 

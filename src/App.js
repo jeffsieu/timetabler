@@ -1,11 +1,9 @@
-import { Box, Card, CardContent, Container, makeStyles, TextField, IconButton, FormControl, InputLabel, MenuItem, Select, Grid } from '@material-ui/core'
+import { Box, Card, Container, makeStyles, TextField, IconButton, FormControl, InputLabel, MenuItem, Select, Grid, Icon, Typography } from '@material-ui/core'
 import React, { useEffect, useRef, useState } from 'react'
-import ReactDOM from 'react-dom'
 import { fetchModule } from './redux/modulesSlice'
 import { deleteCustomModule, deleteAllCustomModules, addCustomModule, updateCustomModules } from './redux/customModules'
 import { useSelector, useDispatch } from 'react-redux'
 import TitleBar from './TitleBar.js'
-import AddMods from './AddMods'
 import Alerts from './Alerts'
 import ImportDialog from './ImportDialog'
 import { generateLessonPlan, dayToIndex } from './timetable'
@@ -61,6 +59,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ececec',
     borderRadius: '8px'
   },
+  errorCard: {
+    backgroundColor: theme.palette.error.main,
+  }
 }));
 
 
@@ -134,9 +135,6 @@ function App() {
     setInputValue('');
     setSelectValue('');
   }
-
-  // Get all mods
-  const listOfMods = useSelector(state => state.allModules.allModules);
   const lessonPlan = generateLessonPlan(modules, customModules, semester);
 
   const numberOfSlots = 10;
@@ -268,7 +266,6 @@ function App() {
                       { }
                       <ModuleCard
                         {...slot} />
-
                     </div>
                   }
                   )
@@ -277,9 +274,10 @@ function App() {
             </Box>
           )}
         </Card>
-        <AddMods
-          listOfMods={listOfMods}
-          modules={modules}/>
+        {
+          modules.length > 0 && lessonPlan.length === 0 ? 'bruh' : null
+
+        }
         <ModulesView
           data={modules}
           semester={semester} // 0 for sem 1 1 for sem 2
