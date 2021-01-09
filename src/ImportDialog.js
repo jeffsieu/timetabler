@@ -45,7 +45,7 @@ export default function FormDialog(props) {
       const url = new URL(input);
       Array.from(url.searchParams.keys()).map(submitModule);   
     } catch (err) {
-      props.msg("Invalid URL entered. Check that you copy the shareable URL from NUSmods correctly!");
+      props.pushMsg("Invalid URL entered", "Check that you copied the shareable URL from NUSmods correctly!");
     }
 
   };  

@@ -107,7 +107,33 @@ function App() {
 
   const [inputValue, setInputValue] = useState('');
   const [selectValue, setSelectValue] = useState('');
-  const [messages, setMessages] = useState('');
+  const [message, setMessage] = useState({
+    error: false,
+    title: '',
+    body: '',
+  });
+
+  const pushMessage = (msgTitle, msgBody) => {
+    setMessage({
+      error: true,
+      title: msgTitle,
+      body: msgBody,
+    });
+  }
+
+  const clearMessage = () => {
+    setMessage({
+      error: false,
+      title: '',
+      body: '',
+    });
+  }
+  
+  const submitModule = (input) => {
+    dispatch(fetchModule(input));
+    setInputValue('');
+    setSelectValue('');
+  }
 
   // Get all mods
   const listOfMods = useSelector(state => state.allModules.allModules);
@@ -156,10 +182,6 @@ function App() {
     return classSlot.moduleCode + 'Class' + classSlot.classNo;
   }
 
-  const clearErrorMessage = () => {
-    setMessages('');
-  }
-
   const componentRef = useRef();
   const { width, height } = useContainerDimensions(componentRef)
 
@@ -202,7 +224,7 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <Alerts messages={messages} clearErrorMessage = {clearErrorMessage}/>
+        { message.error && <Alerts message={message} clearMessage={clearMessage} /> }
         <TitleBar />
           <Grid container justify="center">
             <FormControl className={classes.formControl} >
@@ -220,49 +242,6 @@ function App() {
               </Select>
             </FormControl>
           </Grid>
-        <Box>
-          {/* {customModules.map(customModule =>
-            <Rnd
-              onDragStop={onCustomModuleDragStop(customModule)}
-              onResizeStop={onCustomModuleResizeStop(customModule)}
-              default={{
-                x: offsetLeft + (slotWidth * timeToSlot(customModule.startTime)),
-                y: offsetTop + (slotHeight * customModule.dayIndex),
-                width: slotWidth * (timeToSlot(customModule.endTime) - timeToSlot(customModule.startTime)),
-              }}
-              size={{
-                width: slotWidth * (timeToSlot(customModule.endTime) - timeToSlot(customModule.startTime)),
-              }}
-              position={{
-                x: offsetLeft + (slotWidth * timeToSlot(customModule.startTime)),
-                y: offsetTop + (slotHeight * customModule.dayIndex),
-              }}
-              enableResizing={{
-                bottom: false,
-                bottomLeft: false,
-                bottomRight: false,
-                left: true,
-                right: true,
-                top: false,
-                topLeft: false,
-                topRight: false,
-
-              }}
-              dragGrid={[slotWidth, slotHeight]}
-              resizeGrid={[slotWidth, 1]}
-              bounds='window'
-            >
-              <div style={{ margin: 0, height: '48px' }}>
-                <Card style={{ minHeight: '48px' }}>
-                  Free slot
-                  <IconButton color="primary" aria-label="upload picture" component="span" onClick={onRemoveCustomModuleClick(customModule)}>
-                    <Remove />
-                  </IconButton>
-                  {customModule.dayIndex}
-                </Card>
-              </div>
-            </Rnd>)} */}
-        </Box>
         <Card className={classes.timetable}>
           <Box display="flex">
             <Box className={classes.topLeft}>
@@ -301,12 +280,11 @@ function App() {
         <AddMods
           listOfMods={listOfMods}
           modules={modules}/>
-
-        <ImportDialog />
         <ModulesView
           data={modules}
           semester={semester} // 0 for sem 1 1 for sem 2
         />
+        <ImportDialog pushMsg={pushMessage}/>
       </Container>
     </div>
   );
