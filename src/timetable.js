@@ -37,20 +37,15 @@ function putOneSlotLessons(timetable, lessons) {
   lessons = JSON.parse(JSON.stringify(lessons));
   const confirmedLessons = [];
   for (let [key, classNos] of Object.entries(lessons)) {
-    console.log(Object.values(classNos).length);
     if (Object.values(classNos).length === 1) {
       const slots = classNos[Object.keys(classNos)[0]];
       slots.forEach(slot => { slot.fixed = true });
-      console.log(slots);
       if (hasClash(timetable, slots)) {
         return [null, null];
       } else {
-        console.log(slots)
         for (let slot of slots) {
           timetable = addToTimetable(timetable, slot);
-          console.log(slot)
           confirmedLessons.push(slot);
-          console.log(timetable);
         }
         delete lessons[key];
       }
@@ -65,10 +60,6 @@ function getTimetableIndices(start, end) {
 }
 
 function hasClash(timetable, lessons) {
-  if (lessons[0].moduleCode==='CS2030S' && lessons[0].lessonType === 'Recitation') {
-    console.log(lessons);
-    console.log(timetable);
-  }
   return lessons.some((lesson) => {
     const lessonStart = lesson.startTime;
     const lessonEnd = lesson.endTime;

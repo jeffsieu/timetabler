@@ -199,7 +199,6 @@ function App() {
 
       if (existingModule) {
         dispatch(deleteCustomModule(existingModule));
-        console.log(customModules);
       } else {
         dispatch(addCustomModule({
           startTime: startTime,

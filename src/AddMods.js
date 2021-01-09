@@ -49,7 +49,6 @@ export default function AddMods(props) {
           value={selectValue}
           onChange={(event, newValue) => {
             setSelectValue(newValue);
-            console.log(newValue);
             if (newValue !== null) {
               submitModule(newValue);
             } 

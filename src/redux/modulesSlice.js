@@ -22,7 +22,6 @@ const modulesSlice = createSlice({
     reducers:{
         deleteModule(state, action) {
             const modName = action.payload
-            console.log(modName)
             const existingModuleIndex = state.modules.findIndex(module => module.moduleCode === modName)
             state.modules.splice(existingModuleIndex, 1)
         },
