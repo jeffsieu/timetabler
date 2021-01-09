@@ -114,19 +114,11 @@ function App() {
   });
 
   const pushMessage = (msgTitle, msgBody) => {
-    setMessage({
-      error: true,
-      title: msgTitle,
-      body: msgBody,
-    });
+    setMessage({ error: true, title: msgTitle, body: msgBody, });
   }
 
   const clearMessage = () => {
-    setMessage({
-      error: false,
-      title: '',
-      body: '',
-    });
+    setMessage({ error: false, title: '', body: '', });
   }
   
   const submitModule = (input) => {
