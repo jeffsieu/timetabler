@@ -355,6 +355,7 @@ function App() {
           colorPalette={colorPalette}
           deleteAllCustomModules = {deleteAllCustomModules}
         />
+        <ImportDialog />
         {offsetLeft}
         {offsetTop}
       </Container>
