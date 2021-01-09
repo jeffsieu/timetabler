@@ -37,20 +37,15 @@ function putOneSlotLessons(timetable, lessons) {
   lessons = JSON.parse(JSON.stringify(lessons));
   const confirmedLessons = [];
   for (let [key, classNos] of Object.entries(lessons)) {
-    console.log(Object.values(classNos).length);
     if (Object.values(classNos).length === 1) {
       const slots = classNos[Object.keys(classNos)[0]];
       slots.forEach(slot => { slot.fixed = true });
-      console.log(slots);
       if (hasClash(timetable, slots)) {
         return [null, null];
       } else {
-        console.log(slots)
         for (let slot of slots) {
           timetable = addToTimetable(timetable, slot);
-          console.log(slot)
           confirmedLessons.push(slot);
-          console.log(timetable);
         }
         delete lessons[key];
       }
@@ -107,7 +102,7 @@ function addToTimetable(timetable, lesson) {
   const newTimetable = clone2d(timetable);
   const lessonStart = lesson.startTime;
   const lessonEnd = lesson.endTime;
-  const dayIndex = lesson.dayIndex === undefined ? dayToIndex(lesson.day) : lesson.dayIndex;
+  const dayIndex = lesson.dayIndex ?? dayToIndex(lesson.day);
 
   getTimetableIndices(lessonStart, lessonEnd).forEach(
     (index) => { newTimetable[dayIndex][index] = true }
@@ -135,7 +130,12 @@ function generatePermutation(oldTimetable, lessons) {
       if (hasClash(timetable, classInstance)) {
         continue;
       }
-      const newTimetable = addToTimetable(timetable, classInstance);
+
+      let newTimetable;
+
+      for (let slot of classInstance) {
+        newTimetable = addToTimetable(timetable, classInstance);
+      }
       const newConfirmedLessons = [...confirmedLessons];
       const newUnconfirmedLessons = JSON.parse(JSON.stringify(unconfirmedLessons));
 

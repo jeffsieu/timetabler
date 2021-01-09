@@ -1,15 +1,22 @@
 import React from 'react'
-import { Container, Grid, Divider, IconButton, Typography, Button } from '@material-ui/core'
+import { Box, Container, Grid, Divider, IconButton, Typography, Button, makeStyles } from '@material-ui/core'
 import { Clear } from '@material-ui/icons'
 import { format} from 'date-fns'
 import { deleteModule, deleteAllModules } from './redux/modulesSlice'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord'
 import { deleteAllCustomModules } from './redux/customModules'
+import AddMods from './AddMods'
 
 
+const useStyles = makeStyles((theme) => ({
+    hint: {
+        color: theme.palette.text.hint,
+    }
+  }));
 
 function ModulesView(props) {
+    const classes = useStyles();
     // total MC
     let mc = 0;
 
@@ -20,12 +27,11 @@ function ModulesView(props) {
     }
 
     const onDeleteAllModules = () => {
-        dispatch(props.deleteAllCustomModules())
+        dispatch(deleteAllCustomModules())
         dispatch(deleteAllModules())
     }
     
     const modules = props.data.map (item => {
-        console.log(item.key)
         if (item.moduleCredit !== undefined) {
             mc += parseInt(item.moduleCredit)
         }
@@ -62,18 +68,24 @@ function ModulesView(props) {
             </Grid>
         )
     })
+
+    // Get all mods
+    const listOfMods = useSelector(state => state.allModules.allModules);
     
     return (
-
         <Container style = {{marginBottom: "20px" }}>
             <Grid container justify = "space-between">
-                <Typography variant = "h5">Semester {props.semester}</Typography>
-                <Button variant = "outlined" onClick = {onDeleteAllModules}>Clear All Modules</Button>
+                <AddMods
+                    listOfMods={listOfMods}
+                    modules={modules}/>
+                <Box pt={2}>
+                    <Button variant = "outlined" onClick = {onDeleteAllModules}>Clear All Modules</Button>
+                </Box>
             </Grid>
             <Divider style = {{marginTop: "20px", marginBottom:"20px"}}/>
             <Grid container direction = "row" justify = "flex-start" alignItems = "top">
                 {(props.data === undefined || props.data.length === 0) ? (
-                    <Typography variant = "subtitle2">Add a module to begin!</Typography>
+                    <Typography variant = "subtitle2" className={classes.hint}>No modules chosen</Typography>
                 ):
                     modules
                 }
